@@ -2,12 +2,14 @@
 #define OUTPUTWRITER_H
 
 #include "outputoptions.h"
-#include "splinelistarray.h"
+//#include "splinelistarray.h"
 
 #include <stdio.h>
 #include <string>
 
 namespace AutoTrace {
+
+class SplineListArray;
 
 class OutputWriter
 {

@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
 
     bool inputFile = false;
     bool getInformation = false;
-    bool correctInputs = false;
+    bool correctInputs = true;
 
     for (int i = 1; i < argc; i++)
     {
@@ -406,9 +406,7 @@ int main(int argc, char *argv[])
                 (new AutoTrace::Bitmap(inputReader.get(),
                                        inputName,
                                        inputOpts));
-        splines = std::shared_ptr<AutoTrace::Spline>
-                (new AutoTrace::Spline(bitmap.get (),
-                                       fittingOpts));
+        splines = std::make_shared<AutoTrace::SplineListArray>(bitmap.get (), fittingOpts);
 
         // Dump loaded bitmap if needed
         // @ main.c#L166 - This block of code may be removed, it doesn't
@@ -427,7 +425,7 @@ int main(int argc, char *argv[])
     else
     {
         // Should never reach here
-        std::cout << "Unknown error occurred!" << std::endl;
+        std::cout << "Invalid input arguments!" << std::endl;
     }
 
     delete fittingOpts;

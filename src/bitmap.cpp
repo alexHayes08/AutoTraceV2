@@ -51,7 +51,7 @@ Bitmap::Bitmap(const Bitmap &original)
 
 Bitmap::~Bitmap ()
 {
-    delete[] bitmap;
+    delete bitmap;
     bitmap = nullptr; // Set pointer to null after deleting it... this is good practice?
 }
 
@@ -60,8 +60,8 @@ void Bitmap::init(unsigned char *area,
                   unsigned short height,
                   unsigned int planes)
 {
-    if (bitmap)
-        delete[] bitmap;
+//    if (bitmap != nullptr)
+//        delete bitmap;
 
     if (area)
     {

@@ -15,15 +15,15 @@ std::string BitmapReader::fileExtension ()
     return "BMP";
 }
 
-unsigned char *BitmapReader::func(std::string filename,
-                                   AutoTrace::InputOptions *opts,
-                                   void* data)
+Bitmap *BitmapReader::func(std::string filename,
+                           AutoTrace::InputOptions *opts,
+                           void* data)
 {
     FILE *fd;
     unsigned char buffer[64];
     int ColormapSize, rowbytes, Maps, Grey;
     unsigned char ColorMap[256][3];
-    Bitmap image;
+    Bitmap *image;
     unsigned char *imageStorage;
     BitmapFileHead bitmapFileHead;
     BitmapHead bitmapHead;
@@ -44,14 +44,14 @@ unsigned char *BitmapReader::func(std::string filename,
         }
 
         // bring them to the right byteorder. Not too nice, but it should work
-        bitmapFileHead.bfSize = ToL (&buffer[0x02]);
-        bitmapFileHead.zzHotX = ToS (&buffer[0x06]);
-        bitmapFileHead.zzHotY = ToS (&buffer[0x08]);
-        bitmapFileHead.bf0ffs = ToL (&buffer[0x0a]);
-        bitmapFileHead.biSize = ToL (&buffer[0x0e]);
+        bitmapFileHead.bfSize = ToL (&buffer[0x02]); // Size of BMP file
+        bitmapFileHead.zzHotX = ToS (&buffer[0x06]); // Application specific
+        bitmapFileHead.zzHotY = ToS (&buffer[0x08]); // Application specific
+        bitmapFileHead.bf0ffs = ToL (&buffer[0x0a]); // Offset where the pixel array begins,
+        bitmapFileHead.biSize = ToL (&buffer[0x0e]); // Number of bytes in the DIB header (from this point), aka the number of bytes required by the structure
 
         // What kind of Bitmap is it?
-        if (bitmapFileHead.biSize == 12) // OS/2 i.x ?
+        if (bitmapFileHead.biSize == 12) // OS/2 1.x && Windows 2.0 or later
         {
             if (!ReadOK (fd, buffer, 8))
             {
@@ -68,7 +68,7 @@ unsigned char *BitmapReader::func(std::string filename,
             bitmapHead.biClrUsed = 0;
             Maps = 3;
         }
-        else if (bitmapFileHead.biSize == 40) // Windows 3.x
+        else if (bitmapFileHead.biSize == 40) // Windows 3.x or later, aka 24-bit bitmap
         {
             if (!ReadOK (fd, buffer, bitmapFileHead.biSize - 4))
             {
@@ -89,6 +89,26 @@ unsigned char *BitmapReader::func(std::string filename,
             Maps = 4;
         }
         else if (bitmapFileHead.biSize <= 64) // Probably OS/2 2.X
+        {
+            if (!ReadOK (fd, buffer, bitmapFileHead.biSize - 4))
+            {
+                throw "Error reading BMP file header!\n";
+            }
+
+            bitmapHead.biWidth = ToL (&buffer[0x00]);  // 12
+            bitmapHead.biHeight = ToL (&buffer[0x04]); // 16
+            bitmapHead.biPlanes = ToS (&buffer[0x08]); // 1A
+            bitmapHead.biBitCnt = ToS (&buffer[0x0A]); // 1C
+            bitmapHead.biCompr = ToL (&buffer[0x0C]);  // 1E
+            bitmapHead.biSizeIm = ToL (&buffer[0x10]); // 22
+            bitmapHead.biXPels = ToL (&buffer[0x14]);  // 26
+            bitmapHead.biYpels = ToL (&buffer[0x18]);  // 2A
+            bitmapHead.biClrUsed = ToL (&buffer[0x20]);// 2E
+            bitmapHead.biClrImp = ToL (&buffer[0x20]); // 32
+                                                       // 36
+            Maps = 3;
+        }
+        else if (bitmapFileHead.biSize == 124)
         {
             if (!ReadOK (fd, buffer, bitmapFileHead.biSize - 4))
             {
@@ -162,7 +182,7 @@ unsigned char *BitmapReader::func(std::string filename,
                                   bitmapHead.biCompr,
                                   rowbytes,
                                   Grey);
-        image = Bitmap(imageStorage,
+        image = new Bitmap(imageStorage,
                            (unsigned short) bitmapHead.biWidth,
                            (unsigned short) bitmapHead.biHeight,
                            Grey ? 1 : 3);
@@ -179,7 +199,7 @@ unsigned char *BitmapReader::func(std::string filename,
     }
 
     fclose (fd);
-    return image.getBitmap ();
+    return image;
 }
 
 long BitmapReader::ToL (unsigned char *puffer)

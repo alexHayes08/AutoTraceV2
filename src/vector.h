@@ -22,10 +22,12 @@ public:
     Vector ();
     Vector (const RealCoord c);
     Vector (const Vector &vector);
+    Vector (float x, float y, float z);
     RealCoord VectorToPoint ();
     float Magnitude ();
     void Normalize (const Vector &v);
     void VAbs ();
+    float dx, dy, dz;
 
     static float VDot (const Vector &v1, const Vector &v2);
     static Vector VMultScalar (const Vector &vector, const float r);
@@ -46,8 +48,6 @@ public:
     static float acos_d (float v);
     static bool EpsilonEqual (float v1, float v2);
     static bool IPEqual (const Coord &c1, const Coord &c2);
-
-    float dx, dy, dz;
 };
 
 }

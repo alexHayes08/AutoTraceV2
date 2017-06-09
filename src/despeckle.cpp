@@ -719,7 +719,7 @@ void Despeckle::DespeckleIteration8 (int level,
     free (mask);
 }
 
-void Despeckle::DespeckleBitmap (Bitmap *bitmap,
+void Despeckle::DespeckleBitmap (Bitmap &bitmap,
                                  int level,
                                  float tightness,
                                  float noiseRemoval)
@@ -729,11 +729,11 @@ void Despeckle::DespeckleBitmap (Bitmap *bitmap,
     unsigned char *bits;
     double noiseMax, adaptiveTightness;
 
-    planes = bitmap->getPlanes ();
+    planes = bitmap.getPlanes ();
     noiseMax = noiseRemoval * 255.0;
-    width = bitmap->getWidth ();
-    height = bitmap->getHeight ();
-    bits = bitmap->getBitmap ();
+    width = bitmap.getWidth ();
+    height = bitmap.getHeight ();
+    bits = bitmap.getBitmap ();
     maxLevel = (int) (log (width * height) / log (2.0) - 0.5);
 
     if (level > maxLevel)

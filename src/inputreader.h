@@ -2,7 +2,7 @@
 #define INPUTREADER_H
 
 #include "bitmap.h"
-#include "bitmapreader.h"
+#include "InputReaders/bitmapreader.h"
 #include "inputoptions.h"
 
 #include <map>
@@ -20,7 +20,7 @@ public:
     virtual ~InputReader() {
 //        delete[] data;
     }
-    virtual unsigned char *func (std::string filename,
+    virtual Bitmap *func (std::string filename,
                  AutoTrace::InputOptions *opts,
                  void* data) = 0;
     virtual std::string fileExtension() = 0;

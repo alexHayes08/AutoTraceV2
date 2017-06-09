@@ -84,11 +84,22 @@ int SvgWriter::func (FILE *fd,
     int width = urx - llx;
     int height = ury - lly;
 
-    fputs("<?xml version=\"1.0\" standalone=\"yes\"?>\n", fd);
-    fprintf (fd, "<svg width=\"%d\" height=\"%d\">\n", width, height);
+    try
+    {
+        fd = fopen(filename.c_str(), "wb");
+        fputs("<?xml version=\"1.0\" standalone=\"yes\"?>\n", fd);
+        fprintf (fd, "<svg width=\"%d\" height=\"%d\">\n", width, height);
 
-    outSplines (fd, shape, height);
-    fputs ("</svg>\n", fd);
+        outSplines (fd, shape, height);
+        fputs ("</svg>\n", fd);
+    }
+    catch (...)
+    {
+        fclose (fd);
+        throw "Error happened!";
+    }
+
+    fclose (fd);
 
     return 0;
 }

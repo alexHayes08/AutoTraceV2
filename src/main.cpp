@@ -1,13 +1,16 @@
 #include "bitmap.h"
-#include "bitmapreader.h"
+#include "InputReaders/bitmapreader.h"
 #include "color.h"
+#include "common.h"
+#include "commandhandler.h"
+#include "filewrapper.h"
 #include "fittingoptions.h"
 #include "inputoptions.h"
 #include "inputreader.h"
 #include "outputoptions.h"
 #include "outputwriter.h"
 #include "splinelistarray.h"
-#include "svgwriter.h"
+#include "OutputWriters/svgwriter.h"
 
 #include <algorithm>
 #include <fstream>
@@ -25,54 +28,7 @@ static void ToLowerCase (std::string &input)
 
 namespace AutoTrace {
 
-// Use with fitting options
-class CommandHandler
-{
-    public:
-        static std::string parseInputForCommand (std::string input);
-        static std::string parseInputForArgument (std::string input);
-};
-
-std::string CommandHandler::parseInputForCommand (std::string input)
-{
-    int commandNameStart = 0;
-    for (unsigned int i = 0; i < input.size (); i++)
-    {
-        if (input.at (i) == '-')
-            commandNameStart++;
-        else
-            break;
-    }
-
-    int commandNameEnd = input.find_first_of ('=');
-
-    if (commandNameEnd == std::string::npos)
-        commandNameEnd = input.size ();
-    commandNameEnd = commandNameEnd - commandNameStart;
-
-    std::locale loc;
-    auto command = input.substr (commandNameStart, commandNameEnd);
-    for (std::string::size_type i = 0; i < command.size(); ++i)
-    {
-        std::tolower(command[i], loc);
-    }
-
-    return command;
-}
-
-std::string CommandHandler::parseInputForArgument (std::string input)
-{
-    int argumentNameStart = input.find_first_of ('=');
-    if (argumentNameStart == std::string::npos)
-    {
-        return "";
-    }
-    else
-    {
-        int argumentNameEnd = input.size () - argumentNameStart;
-        return input.substr (argumentNameStart + 1, argumentNameEnd);
-    }
-}
+static void Init(std::string argZero);
 
 static std::map<std::string, std::shared_ptr<InputReader>> InputReaders;
 static std::map<std::string, std::shared_ptr<OutputWriter>> OutputWriters;
@@ -88,18 +44,21 @@ int main(int argc, char *argv[])
     AutoTrace::OutputWriters["svg"] =
             std::shared_ptr<AutoTrace::SvgWriter>(new AutoTrace::SvgWriter());
 
+//    AutoTrace::Init(argv[0]);
+//    std::vector<std::string> arguments(argv + 1, argv + argc);
+
 //    auto fittingOpts = std::make_unique<AutoTrace::FittingOptions>(new AutoTrace::FittingOpts());
 //    auto inputOptions = std::make_unique<AutoTrace::InputOptions>(new AutoTrace::InputOptions());
 //    auto outputOptions = std::make_unique<AutoTrace::OutputOptions>(new AutoTrace::OutputOptions());
     AutoTrace::FittingOptions *fittingOpts = new AutoTrace::FittingOptions();
     AutoTrace::InputOptions *inputOpts = new AutoTrace::InputOptions();
     AutoTrace::OutputOptions *outputOpts = new AutoTrace::OutputOptions();
-    std::string inputName = "",
-            inputRootName = "",
-            inputSuffix = "";
 
-    std::string outputName = "",
-            outputSuffix = "";
+    AutoTrace::FileWrapper *inputFile = nullptr;
+    AutoTrace::FileWrapper *outputFile = nullptr;
+
+//    std::string outputName = "",
+//            outputSuffix = "";
     std::string logfileName;
 //    std::unique_ptr<AutoTrace::Spline> splines;
     std::shared_ptr<AutoTrace::SplineListArray> splines;
@@ -108,10 +67,10 @@ int main(int argc, char *argv[])
     std::shared_ptr<AutoTrace::InputReader> inputReader;
     std::shared_ptr<AutoTrace::OutputWriter> outputWriter;
 
-    FILE *outputFile;
+//    FILE *outputFile;
     FILE *dumpFile;
 
-    bool inputFile = false;
+//    bool inputFile = false;
     bool getInformation = false;
     bool correctInputs = true;
 
@@ -345,38 +304,16 @@ int main(int argc, char *argv[])
         else if (!command.empty())
         {
             // Check to if it's a filename
-            auto posOfFirstDot = command.find_first_of('.');
-            auto posOfLastDot = command.find_last_of('.');
-            if (posOfFirstDot != std::string::npos
-                    && posOfLastDot != std::string::npos)
-            {
-                if (!inputRootName.empty())
-                    throw "Error: Multiple input files detected!";
-
-                // It does appear to be a filename
-                // Then get the prefix & suffix
-
-                inputRootName = command;
-                inputName = command.substr(0, posOfFirstDot);
-                inputSuffix = command.substr(posOfLastDot + 1, command.size());
-
-                ToLowerCase(inputSuffix);
+            inputFile = new AutoTrace::FileWrapper(command);
 
 #ifdef DEBUG
-                std::cout << "Full filename is: " << inputRootName
+                std::cout << "Full filename is: " << inputFile->fullName()
                           << std::endl
-                          << "Filename is: " << inputName
+                          << "Filename is: " << inputFile->name()
                           << std::endl
-                          << "File suffix is: " << inputSuffix
+                          << "File suffix is: " << inputFile->suffix()
                           << std::endl;
 #endif
-
-                inputFile = true;
-            }
-            else
-            {
-                correctInputs = false;
-            }
         }
         else if (command.empty())
         { }
@@ -388,51 +325,59 @@ int main(int argc, char *argv[])
 
     // Then check that all non-specified settings are populated to default
     if (inputReader.get () == nullptr)
-        inputReader = AutoTrace::InputReaders[inputSuffix];
+        inputReader = AutoTrace::InputReaders[inputFile->suffix()];
 
     if (outputWriter.get () == nullptr)
         outputWriter = AutoTrace::OutputWriters["svg"];
 
+    if (outputFile == nullptr)
+    {
+        outputFile = new AutoTrace::FileWrapper(inputFile->name() + "." + "svg");
+        std::cout << "Output file name is now: " << outputFile->fullName() << std::endl;
+    }
+
+    // This program runs in two modes:
+    //  * Information - Help, version, etc...
+    //  * Converts raster image into vector image
     if (getInformation)
     {
         // TODO: Print help msg
         std::cout << "Print help msg... TODO" << std::endl;
     }
-    else if (correctInputs && inputFile)
+    else
     {
-        // TODO: Parse input file
-        std::cout << "Parsing input file... TODO" << std::endl;
         bitmap = std::shared_ptr<AutoTrace::Bitmap>
-                (new AutoTrace::Bitmap(inputReader.get(),
-                                       inputName,
-                                       inputOpts));
-        splines = std::make_shared<AutoTrace::SplineListArray>(bitmap.get (), fittingOpts);
+                (inputReader.get()->func(inputFile->fullName(), inputOpts, nullptr));
+//                (new AutoTrace::Bitmap(inputReader.get(),
+//                                       inputFile->fullName(),
+//                                       inputOpts));
+        splines = std::make_shared<AutoTrace::SplineListArray>(*bitmap.get (), fittingOpts);
 
         // Dump loaded bitmap if needed
         // @ main.c#L166 - This block of code may be removed, it doesn't
         // seem needed anymore
 
         splines.get()->Write(outputWriter.get (),
-                             outputFile,
-                             outputName,
+                             outputFile->file,
+                             outputFile->fullName(),
                              outputOpts); // TODO
-    }
-    else if (!inputFile)
-    {
-        // TODO: Invalid inputs msg
-        std::cout << "Need to specify the input file!" << std::endl;
-    }
-    else
-    {
-        // Should never reach here
-        std::cout << "Invalid input arguments!" << std::endl;
     }
 
     delete fittingOpts;
     delete inputOpts;
     delete outputOpts;
-//    delete outputFile;
-//    delete dumpFile;
+    delete outputFile;
+    delete dumpFile;
 
     return 0;
+}
+
+namespace AutoTrace {
+
+void Init(std::string argZero)
+{
+    std::cout << "Arg0: " << argZero << std::endl;
+    // Setup crap...
+}
+
 }

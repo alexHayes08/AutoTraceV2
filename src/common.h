@@ -1,6 +1,8 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include <string>
+#include <stdio.h>
 #include <vector>
 
 namespace AutoTrace {
@@ -16,6 +18,15 @@ struct ImageHeader
     unsigned short width, height;
     unsigned short depth;
     unsigned format;
+};
+
+struct FileName
+{
+    std::string FullName;
+    std::string Name;
+    std::string Suffix;
+    std::string Path;
+    FILE *File;
 };
 
 enum Edge : unsigned

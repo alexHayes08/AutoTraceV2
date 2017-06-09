@@ -3,6 +3,7 @@
 
 #include "bitmap.h"
 #include "common.h"
+#include "curvelistarray.h"
 //#include "outputwriter.h"
 #include "pixeloutlinelist.h"
 #include "splinelist.h"
@@ -15,7 +16,12 @@ class SplineListArray
 {
 public:
     SplineListArray();
-    SplineListArray(Bitmap *bitmap, FittingOptions *options);
+    SplineListArray(Bitmap &bitmap, FittingOptions *options);
+    SplineListArray *fittedSplines(PixelOutlineList pixelOutlineList,
+                                  FittingOptions *fittingOpts,
+                                  DistanceMap *dist,
+                                  unsigned short width,
+                                  unsigned short height); // Replacement for fitted_splines
     SplineList *data;
 
     // Splines bbox

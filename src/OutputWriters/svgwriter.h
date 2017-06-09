@@ -1,10 +1,10 @@
 #ifndef SVGWRITER_H
 #define SVGWRITER_H
 
-#include "color.h"
-#include "outputwriter.h"
-#include "splinelist.h"
-#include "splinelistarray.h"
+#include "../color.h"
+#include "../outputwriter.h"
+#include "../splinelist.h"
+#include "../splinelistarray.h"
 
 #include <stdio.h>
 

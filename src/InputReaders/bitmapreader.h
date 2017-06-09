@@ -1,11 +1,11 @@
 #ifndef BITMAPREADER_H
 #define BITMAPREADER_H
 
-#include "bitmap.h"
-#include "common.h"
-#include "color.h"
-#include "inputoptions.h"
-#include "inputreader.h"
+#include "../bitmap.h"
+#include "../common.h"
+#include "../color.h"
+#include "../inputoptions.h"
+#include "../inputreader.h"
 
 #include <iostream>
 #include <string>
@@ -46,7 +46,7 @@ class BitmapReader : public InputReader
 {
 public:
 //    BitmapReader();
-    unsigned char *func (std::string filename,
+    Bitmap *func(std::string filename,
                          AutoTrace::InputOptions *opts,
                          void* data);
     void* data;

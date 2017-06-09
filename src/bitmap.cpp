@@ -22,24 +22,24 @@ Bitmap::Bitmap(unsigned short width,
     init (nullptr, width, height, planes);
 }
 
-Bitmap::Bitmap(InputReader *reader,
-               std::string filename,
-               InputOptions *opts)
-{
-    bool newOptions = false;
+//Bitmap::Bitmap(InputReader *reader,
+//               std::string filename,
+//               InputOptions *opts)
+//{
+//    bool newOptions = false;
 
-    if (opts == nullptr)
-    {
-        opts = new InputOptions();
-        newOptions = true;
-    }
+//    if (opts == nullptr)
+//    {
+//        opts = new InputOptions();
+//        newOptions = true;
+//    }
 
-    // FIXME!
-    this->bitmap = reader->func (filename, opts, reader->data);
+//    // FIXME!
+//    this->bitmap = reader->func (filename, opts, reader->data);
 
-    if (newOptions)
-    delete opts;
-}
+//    if (newOptions)
+//        delete opts;
+//}
 
 Bitmap::Bitmap(const Bitmap &original)
 {
@@ -51,8 +51,8 @@ Bitmap::Bitmap(const Bitmap &original)
 
 Bitmap::~Bitmap ()
 {
-    delete bitmap;
-    bitmap = nullptr; // Set pointer to null after deleting it... this is good practice?
+//    delete bitmap;
+//    bitmap = nullptr; // Set pointer to null after deleting it... this is good practice?
 }
 
 void Bitmap::init(unsigned char *area,

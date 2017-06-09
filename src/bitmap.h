@@ -1,7 +1,7 @@
 #ifndef BITMAP_H
 #define BITMAP_H
 
-#include "bitmapreader.h"
+#include "InputReaders/bitmapreader.h"
 #include "color.h"
 #include "common.h"
 #include "inputoptions.h"
@@ -44,9 +44,9 @@ public:
     Bitmap(unsigned short width,
            unsigned short height,
            unsigned int planes);
-    Bitmap(InputReader *reader, // at_bitmap_read
-           std::string filename,
-           InputOptions *opts);
+//    Bitmap(InputReader *reader, // at_bitmap_read
+//           std::string filename,
+//           InputOptions *opts);
     Bitmap(const Bitmap &original);
     ~Bitmap();
 

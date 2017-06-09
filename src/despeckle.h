@@ -36,7 +36,7 @@ namespace AutoTrace {
 class Despeckle
 {
 public:
-    static void DespeckleBitmap (Bitmap *bitmap,
+    static void DespeckleBitmap (Bitmap &bitmap,
                           int level,
                           float tightness,
                           float noiseRemoval);

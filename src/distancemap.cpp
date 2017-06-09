@@ -162,8 +162,8 @@ DistanceMap::DistanceMap(Bitmap *bitmap,
 
 DistanceMap::~DistanceMap ()
 {
-    delete[] weight;
-    delete[] d;
+//    delete[] weight; // Having issues deleting crap...
+//    delete[] d;
 }
 
 }

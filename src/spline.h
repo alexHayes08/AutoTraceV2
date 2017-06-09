@@ -4,6 +4,7 @@
 #include "bitmap.h"
 #include "color.h"
 #include "common.h"
+#include "curve.h"
 #include "despeckle.h"
 #include "distancemap.h"
 #include "fittingoptions.h"
@@ -15,6 +16,7 @@
 #include "vector.h"
 
 //#include <algorithm>
+#include <cmath>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -24,12 +26,14 @@ class Spline
 {
 public:
     Spline();
-    Spline(Bitmap *bitmap,
+    Spline(Bitmap &bitmap,
            FittingOptions *options,
            void* msgData = nullptr,
            void* progressData = nullptr,
            void* testCancelData = nullptr);
+    Spline (const Spline &original);
     PolynomialDegree getDegree () const;
+    void setDegree (PolynomialDegree degree);
     void PrintSpline (FILE *f);
     RealCoord EvaluateSpline (float t);
     RealCoord &StartPointValue ();
@@ -37,6 +41,12 @@ public:
     RealCoord &Control2Value ();
     RealCoord &EndPointValue();
     RealCoord v[4];
+    float getLinearity();
+    void setLinearity(float linearity);
+    bool linearEnough(Curve curve, FittingOptions *fittingOpts);
+    float findError(Curve curve, unsigned *worstPoint);
+
+    static Spline fitOneSpline(Curve curve);
 private:
     float linearity;
     PolynomialDegree degree;

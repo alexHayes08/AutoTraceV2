@@ -5,12 +5,26 @@ namespace AutoTrace {
 Vector::Vector()
 { }
 
+Vector::Vector(const Vector &vector)
+{
+    this->dx = vector.dx;
+    this->dy = vector.dy;
+    this->dz = vector.dz;
+}
+
 /* Given the point COORD, return the corresponding vector.  */
 Vector::Vector(const RealCoord c)
 {
     this->dx = c.x;
     this->dy = c.y;
     this->dz = c.z;
+}
+
+Vector::Vector (float x, float y, float z)
+{
+    this.dx = x;
+    this.dy = y;
+    this.dz = z;
 }
 
 /* And the converse: given a vector, return the corresponding point.  */

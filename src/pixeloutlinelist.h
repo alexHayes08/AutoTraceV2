@@ -18,9 +18,9 @@ public:
     PixelOutlineList(Bitmap *bitmap, // This is equal to the find_outline_pixels
                      Color *bgColor);
     void appendPixelOutline(PixelOutline outline);
+    std::vector<PixelOutline> data;
 
 private:
-    std::vector<PixelOutline> data;
 };
 
 }

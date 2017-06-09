@@ -3,10 +3,11 @@
 namespace AutoTrace
 {
 
-//SplineListArray::SplineListArray()
-//{ }
+SplineListArray::SplineListArray()
+{ }
 
-SplineListArray::SplineListArray(Bitmap *bitmap, FittingOptions *options)
+// NOTE: SET DATA!
+SplineListArray::SplineListArray(Bitmap &bitmap, FittingOptions *options)
 {
     ImageHeader imageHeader;
     PixelOutlineList *pixels;
@@ -23,13 +24,13 @@ SplineListArray::SplineListArray(Bitmap *bitmap, FittingOptions *options)
         return;
     }
 
-    imageHeader.width = bitmap->getWidth ();
-    imageHeader.height = bitmap->getHeight ();
+    imageHeader.width = bitmap.getWidth ();
+    imageHeader.height = bitmap.getHeight ();
 
     // This if statement is confusing... I've no clue why it intializes an object then immediantly destroys it. FLAGGED FOR REMOVAL
     if (options->colorCount > 0)
     {
-        quant = new Quantize(bitmap,
+        quant = new Quantize(&bitmap,
                              options->colorCount,
                              std::shared_ptr<Color>(options->background_color.get()));
         if (quant)
@@ -44,14 +45,14 @@ SplineListArray::SplineListArray(Bitmap *bitmap, FittingOptions *options)
         {
             // Preserve line width prior to thinning
             delete distanceMap;
-            distanceMap = new DistanceMap(bitmap, 255, true);
+            distanceMap = new DistanceMap(&bitmap, 255, true);
             dist = distanceMap;
         }
 
         /* Hereafter, dist is allocated. dist must be freed if
          * the execution is canceled or exception is raised;
          * use FATAL_THEN_CLEANUP_DIST. */
-        ThinImage::thinImage (bitmap, options->background_color.get ());
+        ThinImage::thinImage (&bitmap, options->background_color.get ());
 
         /* Hereafter, pixels is allocated. pixels must be freed if
          * the execution is canceled; use CANCEL_THEN_CLEANUP_PIXELS. */
@@ -61,14 +62,52 @@ SplineListArray::SplineListArray(Bitmap *bitmap, FittingOptions *options)
             if (options->background_color)
                 backgroundColor = *options->background_color;
 
-            pixels = new PixelOutlineList(bitmap, backgroundColor); // find_centerline_pixels
+            pixels = new PixelOutlineList(&bitmap, backgroundColor); // find_centerline_pixels
         }
         else
         {
-            pixels = new PixelOutlineList(bitmap, options->background_color.get ()); // find_outline_pixels
+            pixels = new PixelOutlineList(&bitmap, options->background_color.get ()); // find_outline_pixels
         }
     }
+
+    *data = fittedSplines(*pixels, options, dist, imageHeader.width, imageHeader.height);
+
     delete distanceMap;
+}
+
+// TODO
+SplineListArray *SplineListArray::fittedSplines(PixelOutlineList pixelOutlineList,
+                                               FittingOptions *fittingOpts,
+                                               DistanceMap *dist,
+                                               unsigned short width,
+                                               unsigned short height)
+{
+    unsigned thisList;
+
+    SplineListArray charSplines;
+    CurveListArray curveArray(pixelOutlineList, fittingOpts);
+
+    charSplines.centerline = fittingOpts->centerline;
+    charSplines.preserveWidth = fittingOpts->preserveWidth;
+    charSplines.widthWeightFactor = (bool)fittingOpts->widthWeightFactor;
+
+    if (fittingOpts->background_color == nullptr)
+        charSplines.background = fittingOpts->background_color.get();
+    else
+        charSplines.background = nullptr;
+
+    // Set dummy values. Real value is set in upper context
+    charSplines.width = width;
+    charSplines.height = height;
+
+    for (thisList = 0; thisList < curveArray.data.size(); thisList++)
+    {
+        SplineList *curveListSplines;
+        CurveList curves = curveArray.data[thisList];
+
+        curveListSplines = SplineList(curves, fittingOpts, dist);
+        // Left off @ fit.c#L1090
+    }
 }
 
 SplineList &SplineListArray::elt (unsigned index)

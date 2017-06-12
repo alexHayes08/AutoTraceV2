@@ -45,7 +45,7 @@ void Curve::appendPoint(RealCoord p)
 
 RealCoord Curve::curvePoint(int index)
 {
-    return this->curvePoint(index);
+    return this->pointList[index].coord;
 }
 
 RealCoord Curve::lastCurvePoint()

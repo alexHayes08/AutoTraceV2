@@ -44,9 +44,9 @@ class SplineList
 public:
     SplineList();
     SplineList(const SplineList &original);
-    SplineList(CurveList curveList,
+    SplineList(CurveList &curveList, // fit_curve_list
                FittingOptions *fittingOpts,
-               DistanceMap *dist); // fit_curve_list
+               DistanceMap *dist);
     std::vector<Spline> data;
     unsigned length;
     bool clockwise;
@@ -60,9 +60,9 @@ public:
                      unsigned tangentSurround);
     void changeBadLines(FittingOptions *fittingOpts);
 
-    static void filter (Curve curve, FittingOptions *fittingOpts);
-    static void removeKneePoints(Curve curve, bool clockwise);    
-    static SplineList *fitCurve(Curve curve,
+    static void filter (Curve *curve, FittingOptions *fittingOpts);
+    static void removeKneePoints(Curve* curve, bool clockwise);
+    static SplineList *fitCurve(Curve *curve,
                                 FittingOptions *fittingOpts);
     static SplineList *fitWithLine(Curve curve);
     static SplineList *fitWithLeastSquares(Curve curve,

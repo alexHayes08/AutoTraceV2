@@ -9,6 +9,7 @@
 #include "splinelist.h"
 
 #include <memory>
+#include <vector>
 
 namespace AutoTrace {
 
@@ -22,7 +23,7 @@ public:
                                   DistanceMap *dist,
                                   unsigned short width,
                                   unsigned short height); // Replacement for fitted_splines
-    SplineList *data;
+    std::vector<SplineList> data;
 
     // Splines bbox
     unsigned short height, width;

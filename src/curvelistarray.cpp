@@ -72,7 +72,7 @@ CurveListArray::CurveListArray(PixelOutlineList pixelList,
 
         if (cornerList.size() == 0)
         {
-            // No corners. Use all of hte pixel outline as the curve
+            // No corners. Use all of the pixel outline as the curve
             for (p = 0; p < pixel_o.data.size(); p++)
                 curve->appendPixel(pixel_o.data[p]);
 
@@ -95,7 +95,7 @@ CurveListArray::CurveListArray(PixelOutlineList pixelList,
                 for (p = corner; p <= nextCorner; p++)
                     curve->appendPixel(pixel_o.data[p]);
 
-                curveList->appendCurve(*curve);
+                curveList->appendCurve(curve);
                 curve = new Curve();
                 previousCurve->nextCurve = curve;
                 curve->previousCurve = previousCurve;
@@ -131,16 +131,17 @@ CurveListArray::CurveListArray(PixelOutlineList pixelList,
                       << "]. "
                       << std::endl;
 #endif
-
-            /* Add 'curve' to the end of the list, updating pointers in
-             * the chain
-             */
-            curveList->appendCurve(*curve);
-            curve->nextCurve = firstCurve;
-            firstCurve->previousCurve = curve;
-
-            // ANd no add the just completed curve list to the array
         }
+
+        /* Add 'curve' to the end of the list, updating pointers in
+         * the chain
+         */
+        curveList->appendCurve(curve);
+        curve->nextCurve = firstCurve;
+        firstCurve->previousCurve = curve;
+
+        /* And now add the just-completed curve list to the array.  */
+        this->data.push_back(curveList);
     }
 }
 
@@ -149,7 +150,7 @@ CurveListArray::~CurveListArray()
     this->data.clear();
 }
 
-void CurveListArray::appendCurveList(CurveList c)
+void CurveListArray::appendCurveList(CurveList *c)
 {
     this->data.push_back(c);
 }
@@ -159,12 +160,12 @@ int CurveListArray::length()
     return this->data.size();
 }
 
-CurveList &CurveListArray::elt(int index)
+CurveList *CurveListArray::elt(int index)
 {
     return this->data[index];
 }
 
-CurveList &CurveListArray::lastElt()
+CurveList *CurveListArray::lastElt()
 {
     return this->data[this->data.size()];
 }

@@ -351,7 +351,7 @@ int main(int argc, char *argv[])
 //                (new AutoTrace::Bitmap(inputReader.get(),
 //                                       inputFile->fullName(),
 //                                       inputOpts));
-        splines = std::make_shared<AutoTrace::SplineListArray>(*bitmap.get (), fittingOpts);
+        splines = std::make_shared<AutoTrace::SplineListArray>(*bitmap, fittingOpts);
 
         // Dump loaded bitmap if needed
         // @ main.c#L166 - This block of code may be removed, it doesn't

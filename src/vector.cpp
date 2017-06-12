@@ -22,9 +22,9 @@ Vector::Vector(const RealCoord c)
 
 Vector::Vector (float x, float y, float z)
 {
-    this.dx = x;
-    this.dy = y;
-    this.dz = z;
+    this->dx = x;
+    this->dy = y;
+    this->dz = z;
 }
 
 /* And the converse: given a vector, return the corresponding point.  */

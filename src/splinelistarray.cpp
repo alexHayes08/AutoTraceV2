@@ -53,25 +53,34 @@ SplineListArray::SplineListArray(Bitmap &bitmap, FittingOptions *options)
          * the execution is canceled or exception is raised;
          * use FATAL_THEN_CLEANUP_DIST. */
         ThinImage::thinImage (&bitmap, options->background_color.get ());
-
-        /* Hereafter, pixels is allocated. pixels must be freed if
-         * the execution is canceled; use CANCEL_THEN_CLEANUP_PIXELS. */
-        if (options->centerline)
-        {
-            Color backgroundColor(0xff, 0xff, 0xff);
-            if (options->background_color)
-                backgroundColor = *options->background_color;
-
-            pixels = new PixelOutlineList(&bitmap, backgroundColor); // find_centerline_pixels
-        }
-        else
-        {
-            pixels = new PixelOutlineList(&bitmap, options->background_color.get ()); // find_outline_pixels
-        }
     }
 
-    *data = fittedSplines(*pixels, options, dist, imageHeader.width, imageHeader.height);
+    /* Hereafter, pixels is allocated. pixels must be freed if
+     * the execution is canceled; use CANCEL_THEN_CLEANUP_PIXELS. */
+    if (options->centerline)
+    {
+        Color backgroundColor(0xff, 0xff, 0xff);
+        if (options->background_color)
+            backgroundColor = *options->background_color;
 
+        pixels = new PixelOutlineList(&bitmap, backgroundColor); // find_centerline_pixels
+    }
+    else
+    {
+        pixels = new PixelOutlineList(&bitmap, options->background_color.get ()); // find_outline_pixels
+    }
+
+    auto splineListArray = fittedSplines (*pixels, options, dist, imageHeader.width, imageHeader.height);
+    this->background = splineListArray->background;
+    this->centerline = splineListArray->centerline;
+    this->height = splineListArray->height;
+    this->width = splineListArray->width;
+    this->preserveWidth = splineListArray->preserveWidth;
+    this->widthWeightFactor = splineListArray->widthWeightFactor;
+
+    data.insert (data.end (), splineListArray->data.begin (), splineListArray->data.end ());
+
+    delete splineListArray;
     delete distanceMap;
 }
 
@@ -84,30 +93,36 @@ SplineListArray *SplineListArray::fittedSplines(PixelOutlineList pixelOutlineLis
 {
     unsigned thisList;
 
-    SplineListArray charSplines;
+    SplineListArray *charSplines = new SplineListArray();
     CurveListArray curveArray(pixelOutlineList, fittingOpts);
 
-    charSplines.centerline = fittingOpts->centerline;
-    charSplines.preserveWidth = fittingOpts->preserveWidth;
-    charSplines.widthWeightFactor = (bool)fittingOpts->widthWeightFactor;
+    charSplines->centerline = fittingOpts->centerline;
+    charSplines->preserveWidth = fittingOpts->preserveWidth;
+    charSplines->widthWeightFactor = (bool)fittingOpts->widthWeightFactor;
 
     if (fittingOpts->background_color == nullptr)
-        charSplines.background = fittingOpts->background_color.get();
+        charSplines->background = fittingOpts->background_color.get();
     else
-        charSplines.background = nullptr;
+        charSplines->background = nullptr;
 
     // Set dummy values. Real value is set in upper context
-    charSplines.width = width;
-    charSplines.height = height;
+    charSplines->width = width;
+    charSplines->height = height;
 
     for (thisList = 0; thisList < curveArray.data.size(); thisList++)
     {
         SplineList *curveListSplines;
-        CurveList curves = curveArray.data[thisList];
+        CurveList *curves = curveArray.data[thisList];
 
-        curveListSplines = SplineList(curves, fittingOpts, dist);
-        // Left off @ fit.c#L1090
+        curveListSplines = new SplineList(*curves, fittingOpts, dist);
+        curveListSplines->clockwise = curves->clockwise;
+        curveListSplines->color = pixelOutlineList.data.at(thisList).color;
+
+        charSplines->data.push_back (*curveListSplines);
     }
+
+    curveArray.data.clear ();
+    return charSplines;
 }
 
 SplineList &SplineListArray::elt (unsigned index)

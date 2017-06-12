@@ -254,7 +254,7 @@ unsigned char* BitmapReader::ReadImage (FILE *fd,
     unsigned char v, howmuch;
     int xpos = 0, ypos = 0;
     unsigned char *image;
-    unsigned char *temp, *buffer;
+    unsigned char *temp;//, *buffer;
     long rowstride, channels;
     unsigned short rgb;
     int i, j, notused;
@@ -275,7 +275,9 @@ unsigned char* BitmapReader::ReadImage (FILE *fd,
         channels = 1;
     }
 
-    buffer = new unsigned char[rowbytes];
+    rowstride = width * channels;
+//    unsigned char tempa[rowbytes] = { };
+    unsigned char buffer[rowbytes];
 
     ypos = height - 1; // Bitmaps begin in the lower left corner
     switch (bpp)
@@ -453,7 +455,7 @@ unsigned char* BitmapReader::ReadImage (FILE *fd,
     }
 
     // Delete pointers
-    delete[] buffer;
+    //delete[] buffer;
     return image;
 }
 

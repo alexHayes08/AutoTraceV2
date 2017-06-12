@@ -19,11 +19,11 @@ public:
     CurveListArray(PixelOutlineList pixelList,
                    FittingOptions *fittingOpts); // Split at corners
     ~CurveListArray();
-    void appendCurveList(CurveList c);
-    std::vector<CurveList> data;
+    void appendCurveList(CurveList *c);
+    std::vector<CurveList*> data;
     int length();
-    CurveList &elt(int index);
-    CurveList &lastElt();
+    CurveList *elt(int index);
+    CurveList *lastElt();
 
     static indexList findCorners (PixelOutline pixelOutline,
                                   FittingOptions *fittingOpts);

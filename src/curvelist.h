@@ -11,12 +11,13 @@ class CurveList
 {
 public:
     CurveList();
+    CurveList(const CurveList &original);
     ~CurveList();
-    void appendCurve(Curve c);
-    std::vector<Curve> data;
+    void appendCurve(Curve *c);
+    std::vector<Curve*> data;
     int length();
-    Curve &elt(int index);
-    Curve &lastElt();
+    Curve *elt(int index);
+    Curve *lastElt();
     bool clockwise;
     bool open;
 

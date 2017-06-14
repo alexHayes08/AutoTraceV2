@@ -80,8 +80,10 @@ SplineListArray::SplineListArray(Bitmap &bitmap, FittingOptions *options)
 
     data.insert (data.end (), splineListArray->data.begin (), splineListArray->data.end ());
 
-    delete splineListArray;
-    delete distanceMap;
+    if (splineListArray != nullptr)
+        delete splineListArray;
+//    if (distanceMap != nullptr)
+//        delete distanceMap;
 }
 
 // TODO

@@ -25,8 +25,8 @@ Curve::Curve(const Curve &original)
 Curve::~Curve()
 {
     this->pointList.clear();
-    delete this->startTangent;
-    delete this->endTangent;
+//    delete this->startTangent;
+//    delete this->endTangent;
 }
 
 void Curve::appendPixel(Coord p)

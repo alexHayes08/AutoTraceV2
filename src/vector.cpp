@@ -215,6 +215,8 @@ RealCoord Vector::PAdd (const RealCoord &coord1, const RealCoord &coord2)
     sum.x = coord1.x + coord2.x;
     sum.y = coord1.y + coord2.y;
     sum.z = coord1.z + coord2.z;
+
+    return sum;
 }
 
 void Vector::VAbs ()

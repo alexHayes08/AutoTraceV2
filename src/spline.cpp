@@ -227,47 +227,47 @@ bool Spline::linearEnough(Curve curve, FittingOptions *fittingOpts)
         dist += std::sqrt(std::pow(a-A*w, 2)
                           + std::pow(b-B*w, 2)
                           + std::pow(c-C*w, 2));
-
-#ifdef DEBUG
-        std::cout << "Total distance is "
-                  << dist
-                  << std::endl;
-#endif
-        dist /= curve.length() - 1;
-#ifdef DEBUG
-        std::cout << "which is "
-                  << dist
-                  << " normalized"
-                  << std::endl;
-#endif
-
-        /* We want reversion of short curves to splines to be more likely than
-         * reversion of long curves, hence the second division by the curve
-         * length, for use in `change_bad_lines'.
-         */
-        this->linearity = dist;
-
-#ifdef DEBUG
-        std::cout << "Final linearity: "
-                  << this->linearity
-                  << std::endl;
-#endif
-
-        if (startEndDist * (float)0.5 > fittingOpts->lineThreshold)
-            threshold = fittingOpts->lineThreshold;
-        else
-            threshold = startEndDist * (float)0.5;
-
-#ifdef DEBUG
-        std::cout << "threshold is "
-                  << threshold
-                  << std::endl;
-#endif
-        if (dist < threshold)
-            return true;
-        else
-            return false;
     }
+
+#ifdef DEBUG
+    std::cout << "Total distance is "
+              << dist
+              << std::endl;
+#endif
+    dist /= curve.length() - 1;
+#ifdef DEBUG
+    std::cout << "which is "
+              << dist
+              << " normalized"
+              << std::endl;
+#endif
+
+    /* We want reversion of short curves to splines to be more likely than
+     * reversion of long curves, hence the second division by the curve
+     * length, for use in `change_bad_lines'.
+     */
+    this->linearity = dist;
+
+#ifdef DEBUG
+    std::cout << "Final linearity: "
+              << this->linearity
+              << std::endl;
+#endif
+
+    if (startEndDist * (float)0.5 > fittingOpts->lineThreshold)
+        threshold = fittingOpts->lineThreshold;
+    else
+        threshold = startEndDist * (float)0.5;
+
+#ifdef DEBUG
+    std::cout << "threshold is "
+              << threshold
+              << std::endl;
+#endif
+    if (dist < threshold)
+        return true;
+    else
+        return false;
 }
 
 float Spline::findError(Curve curve, unsigned *worstPoint)

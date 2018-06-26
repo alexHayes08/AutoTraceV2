@@ -60,7 +60,7 @@ float &Curve::curveT(int index)
 
 float &Curve::lastCurveT()
 {
-    this->pointList[this->pointList.size() - 1];
+    return this->pointList[this->pointList.size() - 1].t;
 }
 
 int Curve::length()

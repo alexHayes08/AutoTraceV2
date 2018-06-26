@@ -303,6 +303,8 @@ indexList CurveListArray::findCorners(PixelOutline pixelOutline,
             }
         }
     }
+
+    return cornerList;
 }
 
 void CurveListArray::findVectors(unsigned testIndex,

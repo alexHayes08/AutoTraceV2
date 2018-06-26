@@ -7,6 +7,7 @@
 #include "fittingoptions.h"
 #include "spline.h"
 
+#include <stdexcept>
 #include <iostream>
 #include <limits>
 #include <memory>

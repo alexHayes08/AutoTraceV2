@@ -129,6 +129,9 @@ SplineListArray *SplineListArray::fittedSplines(PixelOutlineList pixelOutlineLis
 
 SplineList &SplineListArray::elt (unsigned index)
 {
+    if (index > this->data.size() || this->data.empty()) {
+        throw new std::out_of_range("Index was out of range.");
+    }
     return this->data[index];
 }
 

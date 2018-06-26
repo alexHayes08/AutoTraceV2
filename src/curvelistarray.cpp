@@ -1,29 +1,52 @@
 #include "curvelistarray.h"
 
-static unsigned prev (AutoTrace::PixelOutline list, unsigned index)
-{
+static unsigned prev (AutoTrace::PixelOutline list, unsigned index) {
     if (index == 0)
         return list.data.size() - 1;
     else
         return index - 1;
 }
 
-static unsigned next (AutoTrace::PixelOutline list, unsigned index)
-{
+static unsigned next (AutoTrace::PixelOutline list, unsigned index) {
     return ((index + 1) % list.data.size());
 }
 
 namespace AutoTrace {
 
-CurveListArray::CurveListArray()
-{ }
+CurveListArray::CurveListArray() {
+    this->data = std::vector<CurveList*>();
+}
 
+// In original source code, this constructor is a function named
+// split_at_corners.
+// Comment from fit.c#323
+/* As mentioned above, the first step is to find the corners in
+   PIXEL_LIST, the list of points.  (Presumably we can't fit a single
+   spline around a corner.)  The general strategy is to look through all
+   the points, remembering which we want to consider corners.  Then go
+   through that list, producing the curve_list.  This is dictated by the
+   fact that PIXEL_LIST does not necessarily start on a corner---it just
+   starts at the character's first outline pixel, going left-to-right,
+   top-to-bottom.  But we want all our splines to start and end on real
+   corners.
+   For example, consider the top of a capital `C' (this is in cmss20):
+                     x
+                     ***********
+                  ******************
+   PIXEL_LIST will start at the pixel below the `x'.  If we considered
+   this pixel a corner, we would wind up matching a very small segment
+   from there to the end of the line, probably as a straight line, which
+   is certainly not what we want.
+   PIXEL_LIST has one element for each closed outline on the character.
+   To preserve this information, we return an array of curve_lists, one
+   element (which in turn consists of several curves, one between each
+   pair of corners) for each element in PIXEL_LIST.  */
 CurveListArray::CurveListArray(PixelOutlineList pixelList,
-                               FittingOptions *fittingOpts)
-{
+                               FittingOptions *fittingOpts
+) {
     unsigned thisPixelO;
-    for (thisPixelO = 0; thisPixelO < pixelList.data.size(); thisPixelO++)
-    {
+    this->data = std::vector<CurveList*>();
+    for (thisPixelO = 0; thisPixelO < pixelList.data.size(); thisPixelO++) {
         Curve *curve, *firstCurve;
         indexList cornerList;
         unsigned p, thisCorner;
@@ -44,21 +67,16 @@ CurveListArray::CurveListArray(PixelOutlineList pixelList,
          * either side of a point before it is conceivable that we might
          * want another corner
          */
-        if (pixel_o.data.size() > fittingOpts->cornerSurround * 2 + 2)
-        {
+        if (pixel_o.data.size() > fittingOpts->cornerSurround * 2 + 2) {
             cornerList = CurveListArray::findCorners(pixel_o, fittingOpts);
-        }
-        else
-        {
-            int surround;
-            if ((surround = (int)(pixel_o.data.size() - 3) / 2) >= 2)
-            {
-                unsigned saveCornerSurround = fittingOpts->cornerSurround;
+        } else {
+            int surround = (int)(pixel_o.data.size() - 3) / 2;
+            if (surround >= 2) {
+                unsigned saveOfCornerSurround = fittingOpts->cornerSurround;
                 fittingOpts->cornerSurround = surround;
                 cornerList = CurveListArray::findCorners(pixel_o, fittingOpts);
-            }
-            else
-            {
+                fittingOpts->cornerSurround = saveOfCornerSurround;
+            } else {
                 cornerList.clear();
             }
         }
@@ -70,8 +88,7 @@ CurveListArray::CurveListArray(PixelOutlineList pixelList,
 
         curve = firstCurve;
 
-        if (cornerList.size() == 0)
-        {
+        if (cornerList.size() == 0) {
             // No corners. Use all of the pixel outline as the curve
             for (p = 0; p < pixel_o.data.size(); p++)
                 curve->appendPixel(pixel_o.data[p]);
@@ -80,14 +97,12 @@ CurveListArray::CurveListArray(PixelOutlineList pixelList,
                 curve->cyclic = false;
             else
                 curve->cyclic = true;
-        }
-        else
-        {
+        } else {
+
             /* Each curve consists of the points between
              * (inclusive) each pair
              */
-            for (thisCorner = 0; thisCorner < cornerList.size() - 1; thisCorner++)
-            {
+            for (thisCorner = 0; thisCorner < cornerList.size() - 1; thisCorner++) {
                 Curve *previousCurve = curve;
                 unsigned corner = cornerList[thisCorner];
                 unsigned nextCorner = cornerList[thisCorner + 1];
@@ -106,18 +121,15 @@ CurveListArray::CurveListArray(PixelOutlineList pixelList,
                  */
                 for (p = cornerList[cornerList.size() - 1]
                      ; p < pixel_o.data.size()
-                     ; p++)
-                {
+                     ; p++
+                ) {
                     curve->appendPixel(pixel_o.data[p]);
                 }
 
-                if (!pixel_o.open)
-                {
+                if (!pixel_o.open) {
                     for (p = 0; p <= cornerList[0]; p++)
                         curve->appendPixel(pixel_o.data[p]);
-                }
-                else
-                {
+                } else {
                     Curve *lastCurve = previousCurve;
                     firstCurve->previousCurve = nullptr;
                     if (lastCurve)
@@ -145,41 +157,35 @@ CurveListArray::CurveListArray(PixelOutlineList pixelList,
     }
 }
 
-CurveListArray::~CurveListArray()
-{
+CurveListArray::~CurveListArray() {
     this->data.clear();
 }
 
-void CurveListArray::appendCurveList(CurveList *c)
-{
+void CurveListArray::appendCurveList(CurveList *c) {
     this->data.push_back(c);
 }
 
-int CurveListArray::length()
-{
+int CurveListArray::length() {
     return this->data.size();
 }
 
-CurveList *CurveListArray::elt(int index)
-{
+CurveList *CurveListArray::elt(int index) {
     return this->data[index];
 }
 
-CurveList *CurveListArray::lastElt()
-{
+CurveList *CurveListArray::lastElt() {
     return this->data[this->data.size()];
 }
 
 indexList CurveListArray::findCorners(PixelOutline pixelOutline,
-                                      FittingOptions *fittingOpts)
-{
+                                      FittingOptions *fittingOpts
+) {
     unsigned p, start_p, end_p;
     indexList cornerList;
 
     start_p = 0;
     end_p = pixelOutline.data.size();
-    if (pixelOutline.open)
-    {
+    if (pixelOutline.open) {
         if (end_p <= fittingOpts->cornerSurround * 2)
             return cornerList;
 
@@ -189,8 +195,7 @@ indexList CurveListArray::findCorners(PixelOutline pixelOutline,
     }
 
     // Consider each pixel on the outline in turn
-    for (p = start_p; p <= end_p; p++)
-    {
+    for (p = start_p; p <= end_p; p++) {
         float cornerAngle;
         Vector inVector, outVector;
 
@@ -202,8 +207,8 @@ indexList CurveListArray::findCorners(PixelOutline pixelOutline,
                     fittingOpts->cornerSurround);
         cornerAngle = Vector::VAngle(inVector, outVector);
 
-        if (fabs(cornerAngle) <= fittingOpts->cornerThreshold)
-        {
+        if (fabs(cornerAngle) <= fittingOpts->cornerThreshold) {
+
             /* We want to keep looking, instead of just appending the
              * first pixel we find with a small enough angle, since there
              * might be another corner within 'corner-surround' pixels, with
@@ -221,8 +226,8 @@ indexList CurveListArray::findCorners(PixelOutline pixelOutline,
             unsigned q = p;
             unsigned i = p + 1;
 
-            while (true)
-            {
+            while (true) {
+
                 /* Perhaps the angle is sufficiently small that we want to
                  * consider this a corner, even if it's not the best
                  * (unless we've already wrapped around in the search,
@@ -233,8 +238,8 @@ indexList CurveListArray::findCorners(PixelOutline pixelOutline,
                  * stopping condition.
                  */
                 if (cornerAngle <= fittingOpts->cornerAlwaysThreshold
-                        && q >= p)
-                {
+                        && q >= p
+                ) {
                     cornerList.push_back(cornerAngle);
                 }
 
@@ -243,8 +248,8 @@ indexList CurveListArray::findCorners(PixelOutline pixelOutline,
                  * at all the pixels.
                  */
                 if (i >= bestCornerIndex + fittingOpts->cornerSurround
-                        || i >= pixelOutline.data.size())
-                {
+                        || i >= pixelOutline.data.size()
+                ) {
                     break;
                 }
 
@@ -261,12 +266,9 @@ indexList CurveListArray::findCorners(PixelOutline pixelOutline,
                  * happens, for example, at the points on the `W' in some
                  * typefaces, where the ``points'' are flat.
                  */
-                if (Vector::EpsilonEqual(cornerAngle, bestCornerAngle))
-                {
+                if (Vector::EpsilonEqual(cornerAngle, bestCornerAngle)) {
                     equallyGoodList.push_back(q);
-                }
-                else if (cornerAngle < bestCornerAngle)
-                {
+                } else if (cornerAngle < bestCornerAngle) {
                     bestCornerAngle = cornerAngle;
 
                     /* We want to check 'corner-surround' pixels beyond the
@@ -284,12 +286,11 @@ indexList CurveListArray::findCorners(PixelOutline pixelOutline,
              * add the corner again.
              */
             if (bestCornerAngle > fittingOpts->cornerAlwaysThreshold
-                    && bestCornerIndex >= p)
-            {
+                    && bestCornerIndex >= p
+            ) {
                 cornerList.push_back(bestCornerAngle);
 
-                for (unsigned j = 0; j < equallyGoodList.size(); j++)
-                {
+                for (unsigned j = 0; j < equallyGoodList.size(); j++) {
                     cornerList.push_back(bestCornerAngle);
                 }
 
@@ -311,8 +312,8 @@ void CurveListArray::findVectors(unsigned testIndex,
                                  PixelOutline outline,
                                  Vector *in,
                                  Vector *out,
-                                 unsigned cornerSurround)
-{
+                                 unsigned cornerSurround
+) {
     int i;
     unsigned nDone;
     Coord candidate = outline.data[testIndex];
@@ -324,16 +325,15 @@ void CurveListArray::findVectors(unsigned testIndex,
     // before p.
     for (i = prev(outline, testIndex), nDone = 0
          ; nDone < cornerSurround
-         ; i = prev(outline, i), nDone++)
-    {
+         ; i = prev(outline, i), nDone++) {
         *in = Vector::VAdd(*out, Vector::IPSubract(outline.data[i], candidate));
     }
 
     // And the points after p.
     for (i = next(outline, testIndex), nDone = 0
          ; nDone < cornerSurround
-         ; i = next(outline, i), nDone++)
-    {
+         ; i = next(outline, i), nDone++
+    ) {
         *out = Vector::VAdd(*out, Vector::IPSubract(outline.data[i], candidate));
     }
 }

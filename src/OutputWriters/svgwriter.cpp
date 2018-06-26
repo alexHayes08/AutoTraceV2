@@ -79,22 +79,19 @@ int SvgWriter::func (FILE *fd,
                      int urx,
                      int ury,
                      OutputOptions *opts,
-                     SplineListArray shape)
-{
+                     SplineListArray shape
+) {
     int width = urx - llx;
     int height = ury - lly;
 
-    try
-    {
+    try {
         fd = fopen(filename.c_str(), "wb");
         fputs("<?xml version=\"1.0\" standalone=\"yes\"?>\n", fd);
         fprintf (fd, "<svg width=\"%d\" height=\"%d\">\n", width, height);
 
         outSplines (fd, shape, height);
         fputs ("</svg>\n", fd);
-    }
-    catch (...)
-    {
+    } catch (...) {
         fclose (fd);
         throw "Error happened!";
     }

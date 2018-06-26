@@ -168,8 +168,9 @@ SplineList::SplineList(CurveList &curveList,
 
 Spline &SplineList::Elt (unsigned index)
 {
-    if (index > this->data.size() - 1)
-        std::cout << "Index out of range error!" << std::endl;
+    if (index > this->data.size() - 1 || this->data.empty()) {
+        throw std::out_of_range("Index out of range");
+    }
 
     return this->data[index];
 }

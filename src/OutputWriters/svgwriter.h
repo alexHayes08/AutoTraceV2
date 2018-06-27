@@ -7,6 +7,7 @@
 #include "../splinelistarray.h"
 
 #include <stdio.h>
+#include <string>
 
 namespace AutoTrace {
 
@@ -21,6 +22,8 @@ public:
               int ury,
               OutputOptions *opts,
               SplineListArray shape);
+    std::string getFileExtension();
+
 private:
     static void outSplines (FILE *fd,
                             SplineListArray shape,

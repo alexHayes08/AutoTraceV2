@@ -18,7 +18,7 @@ class SplineListArray
 public:
     SplineListArray();
     SplineListArray(Bitmap &bitmap, FittingOptions *options);
-    SplineListArray *fittedSplines(PixelOutlineList pixelOutlineList,
+    SplineListArray(PixelOutlineList pixelOutlineList,
                                   FittingOptions *fittingOpts,
                                   DistanceMap *dist,
                                   unsigned short width,

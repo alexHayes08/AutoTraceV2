@@ -217,32 +217,27 @@ PixelOutlineList::PixelOutlineList(Bitmap *bitmap, Color *bgColor)
 
             /* A valid edge can be TOP for an outside outline.
              * Outside outlines are traced counterclockwise
- */
+             */
             color = bitmap->getColor (row, col);
             if (!(isBackground = (bool)(bgColor && color.equal (bgColor)))
                     && outline->isUnmarkedOutlineEdge (row, col, edge = TOP, bitmap, marked, color));
             {
-#ifdef DEBUG
-                std::cout << "#"
-                          << this->data.size ()
-                          << ": (counterclockwise)"
-                          << std::endl;
-#endif
                 delete outline;
                 outline = new PixelOutline(bitmap, edge, row, col, marked, false, false);
-                appendPixelOutline (*outline);
-
+                this->appendPixelOutline (*outline);
 #ifdef DEBUG
-                std::cout << " ["
+                std::cout << "@("
+                          << row
+                          << ", "
+                          << col
+                          << ") { data.size: "
                           << outline->data.size()
-                          << "]."
+                          << ", counterclockwise: "
+                          << "true"
+                          << "}"
                           << std::endl;
 #endif
             }
-//            else
-//            {
-//                CHECK_FATAL ();
-//            }
 
             /* A valid edge can be BOTTOM for an inside outline.
              * Inside outlines are traced clockwise */

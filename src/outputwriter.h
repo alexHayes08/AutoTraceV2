@@ -23,6 +23,7 @@ public:
                       int ury,
                       OutputOptions *opts,
                       SplineListArray shape) = 0;
+    virtual std::string getFileExtension() = 0;
 };
 
 }

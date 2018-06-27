@@ -17,6 +17,13 @@ SplineList::SplineList(const SplineList &original)
     this->open = original.open;
 }
 
+/**
+ * @brief SplineList::SplineList Original definition found at fit.c#L170.
+ * Function was originally named fit_curve_list(...).
+ * @param curveList
+ * @param fittingOpts
+ * @param dist
+ */
 SplineList::SplineList(CurveList &curveList,
                        FittingOptions *fittingOpts,
                        DistanceMap *dist)
@@ -24,7 +31,6 @@ SplineList::SplineList(CurveList &curveList,
     Curve *curve;
     unsigned thisCurve, thisSpline;
     unsigned curveListLength = curveList.data.size();
-    // curveListSplines == this
 
     this->open = curveList.open;
 
@@ -34,8 +40,7 @@ SplineList::SplineList(CurveList &curveList,
      */
     for (thisCurve = 0; thisCurve < curveListLength; thisCurve++)
     {
-        // TODO
-        removeKneePoints (curveList.data[thisCurve], curveList.clockwise);
+        this->removeKneePoints (curveList.data[thisCurve], curveList.clockwise);
     }
 
     if (dist != nullptr)
@@ -103,7 +108,7 @@ SplineList::SplineList(CurveList &curveList,
      * look at an unfiltered curve when computing tangents.  */
     for (thisCurve = 0; thisCurve < curveListLength; thisCurve++)
     {
-        filter(curveList.data[thisCurve], fittingOpts);
+        this->filter(curveList.data[thisCurve], fittingOpts);
     }
 
     /* Make the first point in the first curve also be the last point in
@@ -134,10 +139,10 @@ SplineList::SplineList(CurveList &curveList,
                   << std::endl;
 #endif
 
-        curveSplines = std::unique_ptr<SplineList>(fitCurve(&currentCurve, fittingOpts));
+        curveSplines = std::unique_ptr<SplineList>(this->fitCurve(&currentCurve, fittingOpts));
         if (curveSplines == nullptr)
         {
-//            throw "Could not fit curve!";
+            throw new std::runtime_error("Failed to fit the curve.");
         }
         else
         {
@@ -255,13 +260,20 @@ void SplineList::findTangent(Curve curve,
 #endif
 }
 
+/**
+ * @brief SplineList::filter Original definition at fit.c#L575.
+ * @param curve
+ * @param fittingOpts
+ * @note Smooth the curve by adding in neighboring points.  Do this
+ * `filter_iterations' times.  But don't change the corners.
+ */
 void SplineList::filter(Curve *curve, FittingOptions *fittingOpts)
 {
     unsigned iteration, thisPoint;
     unsigned offset = (curve->cyclic ? 0 : 1);
     RealCoord prevNewPoint;
 
-    /* We must have at least three points---the previous one, the current
+    /* We must have at least three points; the previous one, the current
      * one, and the next one.  But if we don't have at least five, we will
      * probably collapse the curve down onto a single point, which means
      * we won't be able to fit it with a spline.
@@ -275,12 +287,12 @@ void SplineList::filter(Curve *curve, FittingOptions *fittingOpts)
 
     for (iteration = 0; iteration < fittingOpts->filterIterations; iteration++)
     {
-        Curve newcurve = *curve;
+        Curve *newcurve = new Curve(*curve);
         bool collapsed = false;
 
         // Keep the first point on the curve
         if (offset)
-            newcurve.appendPoint(curve->curvePoint(0));
+            newcurve->appendPoint(curve->curvePoint(0));
 
         for (thisPoint = offset
              ; thisPoint < curve->length() - offset;
@@ -336,7 +348,7 @@ void SplineList::filter(Curve *curve, FittingOptions *fittingOpts)
             /* Put the newly computed point into a separate curve, so it
              * doesn't affect future computation (on this iteration).
              */
-            newcurve.appendPoint(prevNewPoint = newPoint);
+            newcurve->appendPoint(prevNewPoint = newPoint);
         }
 
         if (collapsed)
@@ -347,15 +359,20 @@ void SplineList::filter(Curve *curve, FittingOptions *fittingOpts)
         {
             // Just as with the first point, we have to keep the last point
             if (offset)
-                newcurve.appendPoint(curve->lastCurvePoint());
+                newcurve->appendPoint(curve->lastCurvePoint());
 
-            // delete curve;
-            // *curve = *newcurve;
+             delete curve;
+             curve = newcurve;
         }
         // delete newcurve;
     }
 }
 
+/**
+ * @brief SplineList::removeKneePoints Original at fit.c#L715.
+ * @param curve
+ * @param clockwise
+ */
 void SplineList::removeKneePoints(Curve *curve, bool clockwise)
 {
     unsigned i;
@@ -367,43 +384,50 @@ void SplineList::removeKneePoints(Curve *curve, bool clockwise)
     if (!curve->cyclic)
     {
         trimmedCurve.appendPixel(Curve::realToIntCoord(curve->curvePoint(0)));
-
-        for (i = offset; i < curve->pointList.size() - offset; i++)
-        {
-            Coord current = Curve::realToIntCoord(curve->curvePoint(i));
-            Coord next = Curve::realToIntCoord(curve->curvePoint(curve->nextCurveOf(i)));
-
-            Vector prevDelta = Vector::IPSubract(previous, current);
-            Vector nextDelta = Vector::IPSubract(next, current);
-
-            if (ONLY_ONE_ZERO(prevDelta) && ONLY_ONE_ZERO(nextDelta)
-                    && ((clockwise && CLOCKWISE_KNEE(prevDelta, nextDelta))
-                        || (!clockwise
-                            && COUNTERCLOCKWISE_KNEE(prevDelta, nextDelta))))
-            {
-                // LOG2... fit.c#L847
-            }
-            else
-            {
-                previous = current;
-                trimmedCurve.appendPixel(current);
-            }
-        }
-
-        if (!curve->cyclic)
-            trimmedCurve.appendPixel(Curve::realToIntCoord(curve->lastCurvePoint()));
-
-//        if (trimmedCurve.pointList.size() == curve.pointList.size())
-//        {
-//             LOG(" (none) ");
-//        }
-
-//        LOG(".\n");
-
-//        delete curve;
-//        *curve = *trimmedCurve;
-//        free (trimmedCurve);
     }
+
+    for (i = offset; i < curve->pointList.size() - offset; i++)
+    {
+        Coord current = Curve::realToIntCoord(curve->curvePoint(i));
+        Coord next = Curve::realToIntCoord(curve->curvePoint(curve->nextCurveOf(i)));
+        Vector prevDelta = Vector::IPSubract(previous, current);
+        Vector nextDelta = Vector::IPSubract(next, current);
+
+        if (ONLY_ONE_ZERO(prevDelta) && ONLY_ONE_ZERO(nextDelta)
+                && ((clockwise && CLOCKWISE_KNEE(prevDelta, nextDelta))
+                    || (!clockwise
+                        && COUNTERCLOCKWISE_KNEE(prevDelta, nextDelta))))
+        {
+#ifdef DEBUG
+            std::cout << " ("
+                      << current.x
+                      << ", "
+                      << current.y
+                      << ") "
+                      << std::endl;
+#endif
+        }
+        else
+        {
+            previous = current;
+            trimmedCurve.appendPixel(current);
+        }
+    }
+
+    if (!curve->cyclic)
+        trimmedCurve.appendPixel(Curve::realToIntCoord(curve->lastCurvePoint()));
+
+#ifdef DEBUG
+    if (trimmedCurve.pointList.size() == curve->pointList.size())
+    {
+         std::cout << " (none) "
+                   << std::endl;
+    }
+#endif
+
+    delete curve;
+    *curve = trimmedCurve;
+//    free (trimmedCurve);  /* free_curve? --- Masatake */
 }
 
 SplineList *SplineList::fitCurve(Curve *curve,

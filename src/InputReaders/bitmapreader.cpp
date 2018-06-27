@@ -8,11 +8,10 @@ namespace AutoTrace {
 #define BitSet(byte, bit) (((byte) & (bit)) == (bit))
 
 #define ReadOK(file, buffer, len) (fread(buffer, len, 1, file) != 0)
-//#define ReadOK(file, buffer, len) (file->read(buffer, len, 1) != 0)
 
-std::string BitmapReader::fileExtension ()
+std::string BitmapReader::getFileExtension ()
 {
-    return "BMP";
+    return "bmp";
 }
 
 Bitmap *BitmapReader::func(std::string filename,
@@ -28,9 +27,10 @@ Bitmap *BitmapReader::func(std::string filename,
     BitmapFileHead bitmapFileHead;
     BitmapHead bitmapHead;
 
-    try {
+    try
+    {
 //        fd->open(filename, std::ios::binary);
-      fd = fopen(filename.c_str(), "rb");
+        fd = fopen(filename.c_str(), "rb");
 
         if (!fd)
         {
@@ -424,8 +424,8 @@ unsigned char* BitmapReader::ReadImage (FILE *fd,
         }
 
     default:
-        // This is very bad, we should not be here!
-        throw "Error: Unknown error happened at bitmapreader.cpp in function ReadImage!";
+        // Throw error if this point is reached.
+        throw new std::runtime_error("Error: Unknown error happened at bitmapreader.cpp in function ReadImage!");
     }
 
     if (bpp <= 8)

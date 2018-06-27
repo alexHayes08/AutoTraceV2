@@ -12,7 +12,7 @@ Curve::Curve()
 }
 
 ///
-/// \brief Curve::Curve, copies the original EXCEPT the points list
+/// \brief Curve::Curve, copies the original EXCEPT the points list.
 /// \param original
 ///
 Curve::Curve(const Curve &original)
@@ -24,7 +24,7 @@ Curve::Curve(const Curve &original)
 
 Curve::~Curve()
 {
-    this->pointList.clear();
+//    this->pointList.clear();
 //    delete this->startTangent;
 //    delete this->endTangent;
 }

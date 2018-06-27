@@ -17,13 +17,11 @@ class Bitmap;
 class InputReader
 {
 public:
-    virtual ~InputReader() {
-//        delete[] data;
-    }
+    virtual ~InputReader() { }
     virtual Bitmap *func (std::string filename,
                  AutoTrace::InputOptions *opts,
                  void* data) = 0;
-    virtual std::string fileExtension() = 0;
+    virtual std::string getFileExtension() = 0;
     void* data;
 };
 

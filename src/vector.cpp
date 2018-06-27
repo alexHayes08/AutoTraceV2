@@ -3,7 +3,13 @@
 namespace AutoTrace {
 
 Vector::Vector()
-{ }
+{
+    this->dx = 0;
+    this->dy = 0;
+    this->dz = 0;
+
+    this->Magnitude();
+}
 
 Vector::Vector(const Vector &vector)
 {
@@ -46,21 +52,21 @@ float Vector::Magnitude ()
                          + (this->dz * this->dz));
 }
 
-void Vector::Normalize (const Vector &v)
+void Vector::Normalize ()
 {
     float m = this->Magnitude ();
 
     if (m > 0.0)
     {
-        this->dx = v.dx / m;
-        this->dy = v.dy / m;
-        this->dz = v.dz / m;
+        this->dx = this->dx / m;
+        this->dy = this->dy / m;
+        this->dz = this->dz / m;
     }
     else
     {
-        this->dx = v.dx;
-        this->dy = v.dy;
-        this->dz = v.dz;
+        this->dx = this->dx;
+        this->dy = this->dy;
+        this->dz = this->dz;
     }
 }
 
@@ -92,12 +98,14 @@ Vector Vector::VAdd(const Vector &v1, const Vector &v2)
 
 float Vector::VAngle (const Vector &v1, const Vector &v2)
 {
-    Vector a;
-    Vector b;
-    a.Normalize (v1);
-    b.Normalize (v2);
+    Vector a = Vector(v1);
+    Vector b = Vector(v2);
+    a.Normalize();
+    b.Normalize();
 
-    return acos_d (VDot(a, b));
+    auto result = (VDot(a, b));
+    result = acos_d (result);
+    return result;
 }
 
 float Vector::acos_d (float v)
@@ -109,7 +117,7 @@ float Vector::acos_d (float v)
     else if (EpsilonEqual (v, -1.0))
         v = -1.0;
 
-    a = (float) acos (v);
+    a = (float) acos (v * M_PI / 180);
 
     return a * (float) 180.0 / (float) M_PI;
 }

@@ -47,14 +47,14 @@ class BitmapReader : public InputReader
 public:
 //    BitmapReader();
     Bitmap *func(std::string filename,
-                         AutoTrace::InputOptions *opts,
-                         void* data);
+                 AutoTrace::InputOptions *opts,
+                 void* data);
+    std::string getFileExtension();
     void* data;
 private:
     FILE *errorFile;
     std::string progname = "bmp";
     std::string filename;
-    std::string fileExtension();
     int interactiveBmp;
     static long ToL (unsigned char *puffer);
     static short ToS (unsigned char *puffer);

@@ -25,7 +25,7 @@ public:
     Vector (float x, float y, float z);
     RealCoord VectorToPoint ();
     float Magnitude ();
-    void Normalize (const Vector &v);
+    void Normalize ();
     void VAbs ();
     float dx, dy, dz;
 

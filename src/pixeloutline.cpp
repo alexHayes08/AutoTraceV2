@@ -7,6 +7,15 @@ PixelOutline::PixelOutline()
     open = false;
 }
 
+/**
+ * @brief PixelOutline::PixelOutline Original definition found at
+ * pxl-outline.c#L349. Also it was originally named find_one_centerline(...).
+ * @param bitmap
+ * @param searchDir
+ * @param originalRow
+ * @param originalCol
+ * @param marked
+ */
 PixelOutline::PixelOutline(Bitmap *bitmap,
                            Direction searchDir,
                            unsigned short originalRow,
@@ -61,6 +70,17 @@ PixelOutline::PixelOutline(Bitmap *bitmap,
     markDirection(originalRow, originalCol, originalDir, marked);
 }
 
+/**
+ * @brief PixelOutline::PixelOutline Original definition found at
+ * pxl-outline.c#L170. Also it was originally named find_one_outline(...).
+ * @param bitmap
+ * @param originalEdge
+ * @param originalRow
+ * @param originalCol
+ * @param marked
+ * @param clockwise
+ * @param ignore
+ */
 PixelOutline::PixelOutline(Bitmap *bitmap,
                            Edge originalEdge,
                            unsigned short originalRow,
@@ -79,7 +99,7 @@ PixelOutline::PixelOutline(Bitmap *bitmap,
             ((edge == TOP || (edge == RIGHT) ? 1 : 0));
 
     if (!ignore)
-        open = false;
+        this->open = false;
 
     this->color = bitmap->getColor(row, col);
 
@@ -88,11 +108,17 @@ PixelOutline::PixelOutline(Bitmap *bitmap,
         // Put this edge into the output list
         if (!ignore)
         {
-            appendPixelOutline(pos);
+            this->appendPixelOutline(pos);
         }
 
-        markEdge(edge, row, col, marked);
-        pos = nextPoint(bitmap, &edge, &row, &col, this->color, clockwise, marked);
+        this->markEdge(edge, row, col, marked);
+        pos = this->nextPoint(bitmap,
+                              &edge,
+                              &row,
+                              &col,
+                              this->color,
+                              clockwise,
+                              marked);
     } while (edge != NO_EDGE);
 }
 
@@ -320,6 +346,18 @@ unsigned PixelOutline::numberNeighbors(unsigned short row,
     return count;
 }
 
+/**
+ * @brief PixelOutline::nextPoint retreives the next pixel in the bitmap (will
+ * return the first pixel if on the last pixel).
+ * @param bitmap
+ * @param edge
+ * @param row
+ * @param col
+ * @param color
+ * @param clockwise
+ * @param marked
+ * @return
+ */
 Coord PixelOutline::nextPoint(Bitmap *bitmap,
                               Edge *edge,
                               unsigned short *row,
@@ -337,8 +375,8 @@ Coord PixelOutline::nextPoint(Bitmap *bitmap,
         case TOP:
             // WEST
             if ((*col >= 1
-                 && !isMarkedEdge(TOP, *row, *col - 1, marked)
-                 && isOutlineEdge(TOP, bitmap, *row, *col - 1, color)))
+                 && !this->isMarkedEdge(TOP, *row, *col - 1, marked)
+                 && this->isOutlineEdge(TOP, bitmap, *row, *col - 1, color)))
             {
                 // edge = TOP
                 (*col)--;
@@ -348,12 +386,12 @@ Coord PixelOutline::nextPoint(Bitmap *bitmap,
             }
             // NORTHWEST
             else if ((*col >= 1 && *row >= 1
-                      && !isMarkedEdge(RIGHT, *row - 1, *col - 1, marked)
-                      && isOutlineEdge(RIGHT, bitmap, *row - 1, *col, color))
-                     && !(isMarkedEdge(LEFT, *row - 1, *col, marked)
-                          && (isMarkedEdge(TOP, *row, *col - 1, marked)))
-                     && !(isMarkedEdge(BOTTOM, *row - 1, *col, marked)
-                          && (isMarkedEdge(RIGHT, *row, *col - 1, marked))))
+                      && !this->isMarkedEdge(RIGHT, *row - 1, *col - 1, marked)
+                      && this->isOutlineEdge(RIGHT, bitmap, *row - 1, *col, color))
+                     && !(this->isMarkedEdge(LEFT, *row - 1, *col, marked)
+                          && (this->isMarkedEdge(TOP, *row, *col - 1, marked)))
+                     && !(this->isMarkedEdge(BOTTOM, *row - 1, *col, marked)
+                          && (this->isMarkedEdge(RIGHT, *row, *col - 1, marked))))
             {
                 *edge = RIGHT;
                 (*col)--;
@@ -361,8 +399,8 @@ Coord PixelOutline::nextPoint(Bitmap *bitmap,
                 pos.y = bitmap->getHeight() - *row;
                 break;
             }
-            else if ((!isMarkedEdge(LEFT, *row, *col, marked)
-                      && isOutlineEdge(LEFT, bitmap, *row, *col, color)))
+            else if ((!this->isMarkedEdge(LEFT, *row, *col, marked)
+                      && this->isOutlineEdge(LEFT, bitmap, *row, *col, color)))
             {
                 *edge = LEFT;
                 pos.x = *col;
@@ -376,8 +414,8 @@ Coord PixelOutline::nextPoint(Bitmap *bitmap,
         case RIGHT:
             // NORTH
             if ((*row >= 1
-                 && !isMarkedEdge (RIGHT, *row - 1, *col, marked)
-                 && isOutlineEdge(RIGHT, bitmap, *row - 1, *col, color)))
+                 && !this->isMarkedEdge (RIGHT, *row - 1, *col, marked)
+                 && this->isOutlineEdge(RIGHT, bitmap, *row - 1, *col, color)))
             {
                 // *edge = RIGHT;
                 (*row)--;
@@ -387,12 +425,12 @@ Coord PixelOutline::nextPoint(Bitmap *bitmap,
             }
             // NORTHEAST
             else if ((*col + 1 < marked->getWidth() && *row >= 1
-                 && !isMarkedEdge(BOTTOM, *row - 1, *col + 1, marked)
-                 && isOutlineEdge(BOTTOM, bitmap, *row - 1, *col + 1, color))
-                    && !(isMarkedEdge(LEFT, *row, *col + 1, marked)
-                         && isMarkedEdge(BOTTOM, *row - 1, *col, marked))
-                    && !(isMarkedEdge(TOP, *row, *col + 1, marked)
-                         && isMarkedEdge(RIGHT, *row - 1, *col, marked)))
+                 && !this->isMarkedEdge(BOTTOM, *row - 1, *col + 1, marked)
+                 && this->isOutlineEdge(BOTTOM, bitmap, *row - 1, *col + 1, color))
+                    && !(this->isMarkedEdge(LEFT, *row, *col + 1, marked)
+                         && this->isMarkedEdge(BOTTOM, *row - 1, *col, marked))
+                    && !(this->isMarkedEdge(TOP, *row, *col + 1, marked)
+                         && this->isMarkedEdge(RIGHT, *row - 1, *col, marked)))
             {
                 *edge = BOTTOM;
                 (*col)++;
@@ -402,8 +440,8 @@ Coord PixelOutline::nextPoint(Bitmap *bitmap,
                 break;
             }
 
-            else if ((!isMarkedEdge(TOP, *row, *col, marked)
-                 && isOutlineEdge(TOP, bitmap, *row, *col, color)))
+            else if ((!this->isMarkedEdge(TOP, *row, *col, marked)
+                 && this->isOutlineEdge(TOP, bitmap, *row, *col, color)))
             {
                 *edge = TOP;
                 pos.x = *col;
@@ -416,8 +454,8 @@ Coord PixelOutline::nextPoint(Bitmap *bitmap,
         case BOTTOM:
             // EAST
             if ((*col + 1 < marked->getWidth())
-                    && !isMarkedEdge(BOTTOM, *row, *col + 1, marked)
-                    && isOutlineEdge(BOTTOM, bitmap, *row, *col + 1, color))
+                    && !this->isMarkedEdge(BOTTOM, *row, *col + 1, marked)
+                    && this->isOutlineEdge(BOTTOM, bitmap, *row, *col + 1, color))
             {
                 // *edge = BOTTOM;
                 (*col)++;
@@ -428,12 +466,12 @@ Coord PixelOutline::nextPoint(Bitmap *bitmap,
             // SOUTHEAST
             else if ((*col + 1 < marked->getWidth()
                  && *row + 1 < marked->getHeight()
-                 && !isMarkedEdge(LEFT, *row + 1, *col + 1, marked)
-                 && isOutlineEdge(LEFT, bitmap, *row + 1, *col + 1, color))
-                    && !(isMarkedEdge(TOP, *row + 1, *col, marked)
-                         && isMarkedEdge(LEFT, *row, *col + 1, marked))
-                    && !(isMarkedEdge(RIGHT, *row + 1, *col, marked)
-                         && isMarkedEdge(BOTTOM, *row, *col + 1, marked)))
+                 && !this->isMarkedEdge(LEFT, *row + 1, *col + 1, marked)
+                 && this->isOutlineEdge(LEFT, bitmap, *row + 1, *col + 1, color))
+                    && !(this->isMarkedEdge(TOP, *row + 1, *col, marked)
+                         && this->isMarkedEdge(LEFT, *row, *col + 1, marked))
+                    && !(this->isMarkedEdge(RIGHT, *row + 1, *col, marked)
+                         && this->isMarkedEdge(BOTTOM, *row, *col + 1, marked)))
             {
                 *edge = LEFT;
                 (*col)++;
@@ -443,8 +481,8 @@ Coord PixelOutline::nextPoint(Bitmap *bitmap,
                 break;
             }
 
-            else if ((!isMarkedEdge(RIGHT, *row, *col, marked)
-                 && isOutlineEdge(RIGHT, bitmap, *row, *col, color)))
+            else if ((!this->isMarkedEdge(RIGHT, *row, *col, marked)
+                 && this->isOutlineEdge(RIGHT, bitmap, *row, *col, color)))
             {
                 *edge = RIGHT;
                 pos.x = *col + 1;
@@ -457,8 +495,8 @@ Coord PixelOutline::nextPoint(Bitmap *bitmap,
         case LEFT:
             // SOUTH
             if ((*row + 1 < marked->getHeight()
-                 && !isMarkedEdge(LEFT, *row + 1, *col, marked)
-                 && isOutlineEdge (LEFT, bitmap, *row + 1, *col, color)))
+                 && !this->isMarkedEdge(LEFT, *row + 1, *col, marked)
+                 && this->isOutlineEdge (LEFT, bitmap, *row + 1, *col, color)))
             {
                 // *edge = LEFT;
                 (*row)++;
@@ -469,12 +507,12 @@ Coord PixelOutline::nextPoint(Bitmap *bitmap,
 
             // SOUTHWEST
             else if ((*col >= 1 && *row + 1 < marked->getHeight()
-                 && !isMarkedEdge(TOP, *row + 1, *col - 1, marked)
-                 && isOutlineEdge(TOP, bitmap, *row + 1, *col - 1, color))
-                    && !(isMarkedEdge(RIGHT, *row, *col - 1, marked)
-                         && isMarkedEdge(TOP, *row + 1, *col, marked))
-                    && !(isMarkedEdge(BOTTOM, *row, *col - 1, marked)
-                         && isMarkedEdge(LEFT, *row + 1, *col, marked)))
+                 && !this->isMarkedEdge(TOP, *row + 1, *col - 1, marked)
+                 && this->isOutlineEdge(TOP, bitmap, *row + 1, *col - 1, color))
+                    && !(this->isMarkedEdge(RIGHT, *row, *col - 1, marked)
+                         && this->isMarkedEdge(TOP, *row + 1, *col, marked))
+                    && !(this->isMarkedEdge(BOTTOM, *row, *col - 1, marked)
+                         && this->isMarkedEdge(LEFT, *row + 1, *col, marked)))
             {
                 *edge = TOP;
                 (*col)--;
@@ -484,8 +522,8 @@ Coord PixelOutline::nextPoint(Bitmap *bitmap,
                 break;
             }
 
-            else if ((!isMarkedEdge(BOTTOM, *row, *col, marked)
-                 && isOutlineEdge(BOTTOM, bitmap, *row, *col, color)))
+            else if ((!this->isMarkedEdge(BOTTOM, *row, *col, marked)
+                 && this->isOutlineEdge(BOTTOM, bitmap, *row, *col, color)))
             {
                 *edge = BOTTOM;
                 pos.x = *col + 1;
@@ -504,8 +542,8 @@ Coord PixelOutline::nextPoint(Bitmap *bitmap,
         switch (*edge)
         {
         case TOP:
-            if ((!isMarkedEdge(LEFT, *row, *col, marked)
-                 && isOutlineEdge(LEFT, bitmap, *row, *col, color)))
+            if ((!this->isMarkedEdge(LEFT, *row, *col, marked)
+                 && this->isOutlineEdge(LEFT, bitmap, *row, *col, color)))
             {
                 *edge = LEFT;
                 pos.x = *col;
@@ -515,8 +553,8 @@ Coord PixelOutline::nextPoint(Bitmap *bitmap,
 
             // WEST
             if ((*col >= 1
-                 && !isMarkedEdge(TOP, *row, *col - 1, marked)
-                 && isOutlineEdge(TOP, bitmap, *row, *col - 1, color)))
+                 && !this->isMarkedEdge(TOP, *row, *col - 1, marked)
+                 && this->isOutlineEdge(TOP, bitmap, *row, *col - 1, color)))
             {
                 // *edge = TOP;
                 (*col)--;
@@ -527,8 +565,8 @@ Coord PixelOutline::nextPoint(Bitmap *bitmap,
 
             // NORTHWEST
             if ((*col >= 1&& *row >= 1
-                 && !isMarkedEdge(RIGHT, *row - 1, *col - 1, marked)
-                 && isOutlineEdge(RIGHT, bitmap, *row - 1, *col - 1, color)))
+                 && !this->isMarkedEdge(RIGHT, *row - 1, *col - 1, marked)
+                 && this->isOutlineEdge(RIGHT, bitmap, *row - 1, *col - 1, color)))
             {
                 *edge = RIGHT;
                 (*col)--;
@@ -542,8 +580,8 @@ Coord PixelOutline::nextPoint(Bitmap *bitmap,
             break;
 
         case RIGHT:
-            if ((!isMarkedEdge(TOP, *row, *col, marked)
-                 && isOutlineEdge(TOP, bitmap, *row, *col, color)))
+            if ((!this->isMarkedEdge(TOP, *row, *col, marked)
+                 && this->isOutlineEdge(TOP, bitmap, *row, *col, color)))
             {
                 *edge = TOP;
                 pos.x = *col;
@@ -553,8 +591,8 @@ Coord PixelOutline::nextPoint(Bitmap *bitmap,
 
             // NORTH
             if ((*row >= 1
-                 && !isMarkedEdge(RIGHT, *row - 1, *col, marked)
-                 && !isOutlineEdge(RIGHT, bitmap, *row - 1, *col, color)))
+                 && !this->isMarkedEdge(RIGHT, *row - 1, *col, marked)
+                 && !this->isOutlineEdge(RIGHT, bitmap, *row - 1, *col, color)))
             {
                 // *edge = RIGHT
                 (*row)--;
@@ -565,8 +603,8 @@ Coord PixelOutline::nextPoint(Bitmap *bitmap,
 
             // NORTHEAST
             if ((*row + 1 < marked->getWidth() && *row >= 1
-                 && !isMarkedEdge(BOTTOM, *row - 1, *col + 1, marked)
-                 && isOutlineEdge(BOTTOM, bitmap, *row - 1, *col + 1, color)))
+                 && !this->isMarkedEdge(BOTTOM, *row - 1, *col + 1, marked)
+                 && this->isOutlineEdge(BOTTOM, bitmap, *row - 1, *col + 1, color)))
             {
                 *edge = BOTTOM;
                 (*col)++;
@@ -580,8 +618,8 @@ Coord PixelOutline::nextPoint(Bitmap *bitmap,
             break;
 
         case BOTTOM:
-            if ((!isMarkedEdge(RIGHT, *row, *col, marked)
-                 && isOutlineEdge(RIGHT, bitmap, *row, *col, color)))
+            if ((!this->isMarkedEdge(RIGHT, *row, *col, marked)
+                 && this->isOutlineEdge(RIGHT, bitmap, *row, *col, color)))
             {
                 *edge = RIGHT;
                 pos.x = *col + 1;
@@ -591,8 +629,8 @@ Coord PixelOutline::nextPoint(Bitmap *bitmap,
 
             // EAST
             if ((*col + 1 < marked->getWidth()
-                 && !isMarkedEdge(BOTTOM, *row, *col + 1, marked)
-                 && isOutlineEdge(BOTTOM, bitmap, *row, *col + 1, color)))
+                 && !this->isMarkedEdge(BOTTOM, *row, *col + 1, marked)
+                 && this->isOutlineEdge(BOTTOM, bitmap, *row, *col + 1, color)))
             {
                 // *edge = BOTTOM;
                 (*col)++;
@@ -604,8 +642,8 @@ Coord PixelOutline::nextPoint(Bitmap *bitmap,
             // SOUTHEAST
             if ((*col + 1 < marked->getWidth()
                  && *row + 1 < marked->getHeight()
-                 && !isMarkedEdge(LEFT, *row + 1, *col + 1, marked)
-                 && isOutlineEdge(LEFT, bitmap, *row + 1, *col + 1, color)))
+                 && !this->isMarkedEdge(LEFT, *row + 1, *col + 1, marked)
+                 && this->isOutlineEdge(LEFT, bitmap, *row + 1, *col + 1, color)))
             {
                 *edge = LEFT;
                 (*col)++;
@@ -618,8 +656,8 @@ Coord PixelOutline::nextPoint(Bitmap *bitmap,
             break;
 
         case LEFT:
-            if ((!isMarkedEdge(BOTTOM, *row, *col, marked)
-                 && isOutlineEdge(BOTTOM, bitmap, *row, *col, color)))
+            if ((!this->isMarkedEdge(BOTTOM, *row, *col, marked)
+                 && this->isOutlineEdge(BOTTOM, bitmap, *row, *col, color)))
             {
                 *edge = BOTTOM;
                 pos.x = *col + 1;
@@ -629,8 +667,8 @@ Coord PixelOutline::nextPoint(Bitmap *bitmap,
 
             // SOUTH
             if ((*row + 1 < marked->getHeight()
-                 && !isMarkedEdge(LEFT, *row + 1, *col, marked)
-                 && isOutlineEdge(LEFT, bitmap, *row + 1, *col, color)))
+                 && !this->isMarkedEdge(LEFT, *row + 1, *col, marked)
+                 && this->isOutlineEdge(LEFT, bitmap, *row + 1, *col, color)))
             {
                 // *edge = LEFT;
                 (*row)++;
@@ -641,8 +679,8 @@ Coord PixelOutline::nextPoint(Bitmap *bitmap,
 
             // SOUTHWEST
             if ((*col >= 1 && *row + 1 < marked->getHeight()
-                 && !isMarkedEdge(TOP, *row + 1, *col - 1, marked)
-                 && isOutlineEdge(TOP, bitmap, *row + 1, *col - 1, color)))
+                 && !this->isMarkedEdge(TOP, *row + 1, *col - 1, marked)
+                 && this->isOutlineEdge(TOP, bitmap, *row + 1, *col - 1, color)))
             {
                 *edge = TOP;
                 (*col)--;

@@ -6,14 +6,18 @@ namespace AutoTrace
 SplineListArray::SplineListArray()
 { }
 
-// NOTE: SET DATA!
+/**
+ * @brief SplineListArray::SplineListArray
+ * @param bitmap
+ * @param options
+ */
 SplineListArray::SplineListArray(Bitmap &bitmap, FittingOptions *options)
 {
     ImageHeader imageHeader;
     PixelOutlineList *pixels;
     Quantize *quant; // Currently not used?
     DistanceMap *distanceMap,
-            *dist = nullptr;
+    *dist = nullptr;
 
     if (options->despeckleLevel > 0)
     {
@@ -70,49 +74,65 @@ SplineListArray::SplineListArray(Bitmap &bitmap, FittingOptions *options)
         pixels = new PixelOutlineList(&bitmap, options->background_color.get ()); // find_outline_pixels
     }
 
-    auto splineListArray = fittedSplines (*pixels, options, dist, imageHeader.width, imageHeader.height);
-    this->background = splineListArray->background;
-    this->centerline = splineListArray->centerline;
-    this->height = splineListArray->height;
-    this->width = splineListArray->width;
-    this->preserveWidth = splineListArray->preserveWidth;
-    this->widthWeightFactor = splineListArray->widthWeightFactor;
+    this->centerline = options->centerline;
+    this->preserveWidth = options->preserveWidth;
+    this->widthWeightFactor = options->widthWeightFactor;
+    this->background = options->background_color != nullptr
+            ? options->background_color.get()
+            : nullptr;
+    this->width = imageHeader.width;
+    this->height = imageHeader.height;
 
-    data.insert (data.end (), splineListArray->data.begin (), splineListArray->data.end ());
+    AutoTrace::CurveListArray curveArray(*pixels, options);
+    for (unsigned thisList = 0; thisList < curveArray.data.size(); thisList++)
+    {
+        SplineList *curveListSplines;
+        CurveList *curves = curveArray.data[thisList];
 
-    if (splineListArray != nullptr)
-        delete splineListArray;
+        curveListSplines = new SplineList(*curves, options, dist);
+        curveListSplines->clockwise = curves->clockwise;
+        curveListSplines->color = pixels->data.at(thisList).color;
+
+        this->data.push_back (*curveListSplines);
+    }
+
 //    if (distanceMap != nullptr)
 //        delete distanceMap;
 }
 
-// TODO
-SplineListArray *SplineListArray::fittedSplines(PixelOutlineList pixelOutlineList,
-                                               FittingOptions *fittingOpts,
-                                               DistanceMap *dist,
-                                               unsigned short width,
-                                               unsigned short height)
+/**
+ * @brief SplineListArray::SplineListArray - Originally named
+ * fitted_splines(...).
+ * @param pixelOutlineList
+ * @param fittingOpts
+ * @param dist
+ * @param width
+ * @param height
+ */
+SplineListArray::SplineListArray(
+        PixelOutlineList pixelOutlineList,
+        FittingOptions *fittingOpts,
+        DistanceMap *dist,
+        unsigned short width,
+        unsigned short height)
 {
     unsigned thisList;
-
-    SplineListArray *charSplines = new SplineListArray();
     CurveListArray curveArray(pixelOutlineList, fittingOpts);
 
-    charSplines->centerline = fittingOpts->centerline;
-    charSplines->preserveWidth = fittingOpts->preserveWidth;
-    charSplines->widthWeightFactor = (bool)fittingOpts->widthWeightFactor;
+    this->centerline = fittingOpts->centerline;
+    this->preserveWidth = fittingOpts->preserveWidth;
+    this->widthWeightFactor = (bool)fittingOpts->widthWeightFactor;
 
-    if (fittingOpts->background_color == nullptr)
-        charSplines->background = fittingOpts->background_color.get();
+    if (fittingOpts->background_color != nullptr)
+        this->background = fittingOpts->background_color.get();
     else
-        charSplines->background = nullptr;
+        this->background = nullptr;
 
     // Set dummy values. Real value is set in upper context
-    charSplines->width = width;
-    charSplines->height = height;
+    this->width = width;
+    this->height = height;
 
-    for (thisList = 0; thisList < curveArray.data.size(); thisList++)
-    {
+    for (thisList = 0; thisList < curveArray.data.size(); thisList++) {
         SplineList *curveListSplines;
         CurveList *curves = curveArray.data[thisList];
 
@@ -120,16 +140,14 @@ SplineListArray *SplineListArray::fittedSplines(PixelOutlineList pixelOutlineLis
         curveListSplines->clockwise = curves->clockwise;
         curveListSplines->color = pixelOutlineList.data.at(thisList).color;
 
-        charSplines->data.push_back (*curveListSplines);
+        this->data.push_back (*curveListSplines);
     }
-
-    curveArray.data.clear ();
-    return charSplines;
 }
 
 SplineList &SplineListArray::elt (unsigned index)
 {
-    if (index > this->data.size() || this->data.empty()) {
+    if (index > this->data.size() || this->data.empty())
+    {
         throw new std::out_of_range("Index was out of range.");
     }
     return this->data[index];

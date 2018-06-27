@@ -20,30 +20,57 @@
 #include <stdio.h>
 #include <string>
 
-static void ToLowerCase (std::string &input)
+static inline bool DoesFileExist (const std::string& name) {
+    FILE *file;
+    file = fopen(name.c_str(), "r");
+    bool result = file != nullptr;
+
+    if (result) {
+        fclose(file);
+    }
+
+    return result;
+}
+
+static void ToLowerCase (std::string &input, std::locale &locale)
 {
     std::transform(input.begin (), input.end(), input.begin(),
-                   [](unsigned char c) { return std::tolower(c); });
+        [locale](char c) { return std::tolower(c, locale); });
 }
 
-namespace AutoTrace {
+static std::map<std::string, std::shared_ptr<AutoTrace::InputReader>> CreateInputReaders()
+{
+    std::map<std::string, std::shared_ptr<AutoTrace::InputReader>> mapOfInputReaders;
 
-static void Init(std::string argZero);
+    auto bitmapReader = new AutoTrace::BitmapReader();
+    mapOfInputReaders[bitmapReader->getFileExtension()] =
+            std::shared_ptr<AutoTrace::BitmapReader>(bitmapReader);
 
-static std::map<std::string, std::shared_ptr<InputReader>> InputReaders;
-static std::map<std::string, std::shared_ptr<OutputWriter>> OutputWriters;
+    return mapOfInputReaders;
 }
 
-int main(int argc, char *argv[]) {
+static std::map<std::string, std::shared_ptr<AutoTrace::OutputWriter>> CreateOutputReaders()
+{
+    std::map<std::string, std::shared_ptr<AutoTrace::OutputWriter>> mapOfOutputReaders;
+
+    auto svgWriter = new AutoTrace::SvgWriter();
+    mapOfOutputReaders[svgWriter->getFileExtension()] =
+            std::shared_ptr<AutoTrace::SvgWriter>(svgWriter);
+
+    return mapOfOutputReaders;
+}
+
+int main(int argc, char *argv[])
+{
+    // Init locale
+    std::locale locale;
+
     // Init InputReaders
-    AutoTrace::InputReaders["bmp"] =
-            std::shared_ptr<AutoTrace::BitmapReader>(new AutoTrace::BitmapReader());
+    auto inputReaders = CreateInputReaders();
 
     // Init OutputWriters
-    AutoTrace::OutputWriters["svg"] =
-            std::shared_ptr<AutoTrace::SvgWriter>(new AutoTrace::SvgWriter());
+    auto outputWriters = CreateOutputReaders();
 
-    AutoTrace::Init(argv[0]);
     std::vector<std::string> arguments(argv + 1, argv + argc);
 
 //    auto fittingOpts = std::make_unique<AutoTrace::FittingOptions>(new AutoTrace::FittingOpts());
@@ -83,15 +110,20 @@ int main(int argc, char *argv[]) {
                   << std::endl;
 #endif
 
-        if (command == "help") {
+        if (command == "help")
+        {
             getInformation = true;
-        } else if (command == "background-color") {
+        }
+        else if (command == "background-color")
+        {
             fittingOpts->background_color = std::shared_ptr<AutoTrace::Color>(new AutoTrace::Color(argument));
             inputOpts->backgroundColor = fittingOpts->background_color;
 #ifdef DEBUG
             std::cout << "Set the background-color to: " << argument << std::endl;
 #endif
-        } else if (command == "charcode") {
+        }
+        else if (command == "charcode")
+        {
             fittingOpts->charcode = (unsigned char) (std::stoi(argument));
             inputOpts->charchode = fittingOpts->charcode;
 #ifdef DEBUG
@@ -99,35 +131,45 @@ int main(int argc, char *argv[]) {
                       << argument
                       << std::endl;
 #endif
-        } else if (command == "color-count") {
+        }
+        else if (command == "color-count")
+        {
             fittingOpts->colorCount = static_cast<unsigned int>(std::stoul (argument));
 #ifdef DEBUG
             std::cout << "Set color count to: "
                       << fittingOpts->colorCount
                       << std::endl;
 #endif
-        } else if (command == "corner-always-threshold") {
+        }
+        else if (command == "corner-always-threshold")
+        {
             fittingOpts->cornerAlwaysThreshold = std::stod (argument);
 #ifdef DEBUG
             std::cout << "Set corner-always-threshold to: "
                       << argument
                       << std::endl;
 #endif
-        } else if (command == "corner-surround") {
+        }
+        else if (command == "corner-surround")
+        {
             fittingOpts->cornerSurround = static_cast<unsigned int>(std::stoul (argument));
 #ifdef DEBUG
             std::cout << "Set corner-surround to: "
                       << argument
                       << std::endl;
 #endif
-        } else if (command == "corner-threshold") {
+        }
+        else if (command == "corner-threshold")
+        {
             fittingOpts->cornerThreshold = std::stod (argument);
 #ifdef DEBUG
             std::cout << "Set corner-threshold to: "
                       << argument
                       << std::endl;
 #endif
-        } else if (command == "dpi") {
+        }
+        else if (command == "dpi")
+        {
             outputOpts->dpi = std::stoi (argument);
 
 #ifdef DEBUG
@@ -135,39 +177,51 @@ int main(int argc, char *argv[]) {
                       << argument
                       << std::endl;
 #endif
-        } else if (command == "error-threshold") {
+        }
+        else if (command == "error-threshold")
+        {
             fittingOpts->errorThreshold = std::stod (argument);
 #ifdef DEBUG
             std::cout << "Set error-threshold to: "
                       << argument
                       << std::endl;
 #endif
-        } else if (command == "filter-iterations") {
+        }
+        else if (command == "filter-iterations")
+        {
             fittingOpts->filterIterations = static_cast<unsigned int>(std::stoul(argument));
 #ifdef DEBUG
             std::cout << "Set filterIterations to: "
                       << argument
                       << std::endl;
 #endif
-        } else if (command == "line-reversion-theshold") {
+        }
+        else if (command == "line-reversion-theshold")
+        {
             fittingOpts->lineReversionThreshold = std::stod(argument);
 #ifdef DEBUG
             std::cout << "Set line-reversion-threshold to: "
                       << argument
                       << std::endl;
 #endif
-        } else if (command == "line-threshold") {
+        }
+        else if (command == "line-threshold")
+        {
             fittingOpts->lineThreshold = std::stod(argument);
 #ifdef DEBUG
             std::cout << "Set line-threshold to: "
                       << argument
                       << std::endl;
 #endif
-        } else if (command == "output-format") {
-            ToLowerCase (argument);
-            outputWriter = AutoTrace::OutputWriters[argument];
-        } else if (command == "remove-adjacent-corners") {
-            ToLowerCase (argument);
+        }
+        else if (command == "output-format")
+        {
+            ToLowerCase (argument, locale);
+            outputWriter = outputWriters[argument];
+        }
+        else if (command == "remove-adjacent-corners")
+        {
+            ToLowerCase (argument, locale);
 
             if (argument.empty () || argument == "true")
                 fittingOpts->removeAdjacentCorners = true;
@@ -181,39 +235,51 @@ int main(int argc, char *argv[]) {
                       << (fittingOpts->removeAdjacentCorners ? "true" : "false")
                       << std::endl;
 #endif
-        } else if (command == "tangent-surround") {
+        }
+        else if (command == "tangent-surround")
+        {
             fittingOpts->tangentSurround = static_cast<unsigned int>(std::stoul(argument));
 #ifdef DEBUG
             std::cout << "Set tangent-surround to: "
                       << argument
                       << std::endl;
 #endif
-        } else if (command == "despeckle-level") {
+        }
+        else if (command == "despeckle-level")
+        {
             fittingOpts->despeckleLevel = static_cast<unsigned int>(std::stoul(argument));
 #ifdef DEBUG
             std::cout << "Set despeckle level to: "
                       << argument
                       << std::endl;
 #endif
-        } else if (command == "despeckle-tightness") {
+        }
+        else if (command == "despeckle-tightness")
+        {
             fittingOpts->despeckleTightness = std::stod(argument);
 #ifdef DEBUG
             std::cout << "Set despeckle-tightness to: "
                       << argument
                       << std::endl;
 #endif
-        } else if (command == "input-format") {
-            ToLowerCase (argument);
-            inputReader = AutoTrace::InputReaders[argument];
-        } else if (command == "noise-removal") {
+        }
+        else if (command == "input-format")
+        {
+            ToLowerCase (argument, locale);
+            inputReader = inputReaders[argument];
+        }
+        else if (command == "noise-removal")
+        {
             fittingOpts->noiseRemoval = std::stod(argument);
 #ifdef DEBUG
             std::cout << "Set noise-removal to: "
                       << argument
                       << std::endl;
 #endif
-        } else if (command == "centerline") {
-            ToLowerCase (argument);
+        }
+        else if (command == "centerline")
+        {
+            ToLowerCase (argument, locale);
 
             if (argument.empty () || argument == "true")
                 fittingOpts->centerline = true;
@@ -227,8 +293,10 @@ int main(int argc, char *argv[]) {
                       << (fittingOpts->centerline ? "true" : "false")
                       << std::endl;
 #endif
-        } else if (command == "preserve-width") {
-            ToLowerCase (argument);
+        }
+        else if (command == "preserve-width")
+        {
+            ToLowerCase (argument, locale);
 
             if (argument.empty () || argument == "true")
                 fittingOpts->preserveWidth = true;
@@ -242,8 +310,10 @@ int main(int argc, char *argv[]) {
                       << (fittingOpts->preserveWidth ? "true" : "false")
                       << std::endl;
 #endif
-        } else if (command == "width-weight-factor") {
-            ToLowerCase (argument);
+        }
+        else if (command == "width-weight-factor")
+        {
+            ToLowerCase (argument, locale);
 
             if (argument.empty () || argument == "true")
                 fittingOpts->widthWeightFactor = true;
@@ -257,7 +327,9 @@ int main(int argc, char *argv[]) {
                       << (fittingOpts->widthWeightFactor ? "true" : "false")
                       << std::endl;
 #endif
-        } else if (!command.empty()) {
+        }
+        else if (!command.empty())
+        {
             // Check to if it's a filename
             inputFile = new AutoTrace::FileWrapper(command);
 
@@ -269,41 +341,79 @@ int main(int argc, char *argv[]) {
                           << "File suffix is: " << inputFile->suffix()
                           << std::endl;
 #endif
-        } else if (command.empty()) {
-
-        } else {
+        }
+        else if (command.empty())
+        {
+            // TODO: Handle empty
+        }
+        else
+        {
+            // Something went wrong...
             correctInputs = false;
         }
     }
 
+    // If no input file was specified than set getInformation to true.
+    getInformation = inputFile == nullptr;
+
     // If we're not getting information validate that all required settings.
     if (!getInformation) {
 
-        // Then check that all non-specified settings are populated to default.
-        if (inputReader.get () == nullptr)
-            inputReader = AutoTrace::InputReaders[inputFile->suffix()];
+        // Verify the input file exists, exit program if not.
+        if (!DoesFileExist(inputFile->fullName()))
+        {
+            std::cout << "Failed to locate the input file @"
+                      << inputFile->fullName()
+                      << "."
+                      << std::endl;
+            return -1;
+        }
 
-        if (outputWriter.get () == nullptr)
-            outputWriter = AutoTrace::OutputWriters["svg"];
-
+        // Set the default outputFile if one isn't specified.
         if (outputFile == nullptr) {
             outputFile = new AutoTrace::FileWrapper(inputFile->name() + "." + "svg");
             std::cout << "Output file name is now: " << outputFile->fullName() << std::endl;
         }
+
+        // Verify the input/output formats are valid, if not exit program.
+        if (inputReaders.find(inputFile->suffix()) == inputReaders.end())
+        {
+            std::cout << "Input file format ("
+                      << inputFile->suffix()
+                      << ") isn't supported."
+                      << std::endl;
+
+            return -1;
+        }
+        else if (outputWriters.find(outputFile->suffix()) == outputWriters.end())
+        {
+            std::cout << "Output file format ("
+                      << outputFile->suffix()
+                      << ") isn't supported."
+                      << std::endl;
+            return -1;
+        }
+
+        // Then check that all non-specified settings are populated to default.
+        if (inputReader.get () == nullptr)
+            inputReader = inputReaders[inputFile->suffix()];
+
+        if (outputWriter.get () == nullptr)
+            outputWriter = outputWriters[outputFile->suffix()];
     }
 
     // This program runs in two modes:
     //  * Information - Help, version, etc...
     //  * Converts raster image into vector image
-    if (getInformation) {
+    if (getInformation)
+    {
         // TODO: Print help msg
         std::cout << "TODO: Print help msg." << std::endl;
-    } else {
-        bitmap = std::shared_ptr<AutoTrace::Bitmap>
-                (inputReader.get()->func(inputFile->fullName(), inputOpts, nullptr));
-//                (new AutoTrace::Bitmap(inputReader.get(),
-//                                       inputFile->fullName(),
-//                                       inputOpts));
+    }
+    else
+    {
+        bitmap = std::shared_ptr<AutoTrace::Bitmap>(
+            inputReader.get()->func(inputFile->fullName(), inputOpts, nullptr));
         splines = std::make_shared<AutoTrace::SplineListArray>(*bitmap, fittingOpts);
 
         // Dump loaded bitmap if needed
@@ -323,14 +433,4 @@ int main(int argc, char *argv[]) {
     delete dumpFile;
 
     return 0;
-}
-
-namespace AutoTrace {
-
-void Init(std::string argZero)
-{
-    std::cout << "Arg0: " << argZero << std::endl;
-    // Setup crap...
-}
-
 }

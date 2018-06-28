@@ -22,7 +22,7 @@ CurveListArray::CurveListArray()
 
 // In original source code, this constructor is a function named
 // split_at_corners.
-// Comment from fit.c#323
+// Comment from fit.c#L323
 /* As mentioned above, the first step is to find the corners in
    PIXEL_LIST, the list of points.  (Presumably we can't fit a single
    spline around a corner.)  The general strategy is to look through all
@@ -47,9 +47,12 @@ CurveListArray::CurveListArray()
 CurveListArray::CurveListArray(PixelOutlineList pixelList,
                                FittingOptions *fittingOpts)
 {
-    unsigned thisPixelO;
+#ifdef DEBUG
+    std::cout << "Finding corners:"
+         << std::endl;
+#endif
     this->data = std::vector<CurveList*>();
-    for (thisPixelO = 0; thisPixelO < pixelList.data.size(); thisPixelO++)
+    for (unsigned thisPixelO = 0; thisPixelO < pixelList.data.size(); thisPixelO++)
     {
         Curve *curve, *firstCurve;
         indexList cornerList;
@@ -62,7 +65,7 @@ CurveListArray::CurveListArray(PixelOutlineList pixelList,
 #ifdef DEBUG
         std::cout << "#"
                   << thisPixelO
-                  << ":" << std::endl;
+                  << ":";
 #endif
 
         /* If the outline does not have enough points, we can't do
@@ -73,6 +76,10 @@ CurveListArray::CurveListArray(PixelOutlineList pixelList,
          */
         if (pixel_o.data.size() > fittingOpts->cornerSurround * 2 + 2)
         {
+            if (pixel_o.data.size() < 3)
+            {
+                continue;
+            }
             cornerList = CurveListArray::findCorners(pixel_o, fittingOpts);
         }
         else
@@ -125,39 +132,39 @@ CurveListArray::CurveListArray(PixelOutlineList pixelList,
                 curve = new Curve();
                 previousCurve->nextCurve = curve;
                 curve->previousCurve = previousCurve;
-
-                /* The last curve is different.  It consists of the points
-                 * (inclusive) between the last corner and the end of the list,
-                 * and the beginning of the list and the first corner.
-                 */
-                for (p = cornerList[cornerList.size() - 1]
-                     ; p < pixel_o.data.size()
-                     ; p++)
-                {
-                    curve->appendPixel(pixel_o.data[p]);
-                }
-
-                if (!pixel_o.open)
-                {
-                    for (p = 0; p <= cornerList[0]; p++)
-                        curve->appendPixel(pixel_o.data[p]);
-                }
-                else
-                {
-                    Curve *lastCurve = previousCurve;
-                    firstCurve->previousCurve = nullptr;
-                    if (lastCurve)
-                        lastCurve->nextCurve = nullptr;
-                }
             }
 
-#ifdef DEBUG
-            std::cout << " ["
-                      << cornerList.size()
-                      << "]. "
-                      << std::endl;
-#endif
+            /* The last curve is different.  It consists of the points
+             * (inclusive) between the last corner and the end of the list,
+             * and the beginning of the list and the first corner.
+             */
+            for (p = cornerList[cornerList.size() - 1]
+                 ; p < pixel_o.data.size()
+                 ; p++)
+            {
+                curve->appendPixel(pixel_o.data[p]);
+            }
+
+            if (!pixel_o.open)
+            {
+                for (p = 0; p <= cornerList[0]; p++)
+                    curve->appendPixel(pixel_o.data[p]);
+            }
+            else
+            {
+                Curve *lastCurve = curve->previousCurve;
+                firstCurve->previousCurve = nullptr;
+                if (lastCurve)
+                    lastCurve->nextCurve = nullptr;
+            }
         }
+
+#ifdef DEBUG
+        std::cout << " size: ["
+                  << cornerList.size()
+                  << "]."
+                  << std::endl;
+#endif
 
         /* Add 'curve' to the end of the list, updating pointers in
          * the chain

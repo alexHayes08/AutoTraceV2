@@ -43,9 +43,6 @@ public:
     Curve(const Curve &original);
     ~Curve();
 
-    void appendPixel(Coord p);
-    void appendPoint(RealCoord p);
-
     std::vector<Point> pointList;
     RealCoord curvePoint(int index);
     RealCoord lastCurvePoint();
@@ -55,27 +52,25 @@ public:
     bool cyclic;
     Curve *previousCurve;
     Curve *nextCurve;
+    Vector *startTangent;
+    Vector *endTangent;
+
+    void appendPixel(Coord p);
+    void appendPoint(RealCoord p);
     void findTangent(bool toStartPoint,
                      bool crossCurve,
                      unsigned tangentSurround);
     Vector findHalfTangent(bool toStartPoint,
                            unsigned *nPoints,
                            unsigned tangentSurround);
-//    float findError(Spline spline, unsigned *worstPoint);
-//    Spline fitOneSpline();
     void setInitialParameterValues();
 
     unsigned prevCurveOf(int index);
     unsigned nextCurveOf(int index);
 
-    Vector *startTangent;
-    Vector *endTangent;
-
     static RealCoord intToRealCoord(Coord intCoord);
     static Coord realToIntCoord(RealCoord realCoord);
     static Vector toVector(CurveVector cv);
-
-private:
 };
 
 }

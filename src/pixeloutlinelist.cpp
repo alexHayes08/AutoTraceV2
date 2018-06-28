@@ -196,11 +196,17 @@ PixelOutlineList::PixelOutlineList(Bitmap *bitmap, Color bgColor)
     delete marked;
 }
 
+/**
+ * @brief PixelOutlineList::PixelOutlineList Original definition found at
+ * pxl-outline.c#L85. Originally named find_outline_pixels.
+ * @param bitmap
+ * @param bgColor
+ */
 PixelOutlineList::PixelOutlineList(Bitmap *bitmap, Color *bgColor)
 {
     unsigned short row, col;
     Bitmap *marked = new Bitmap (bitmap->getWidth (), bitmap->getHeight (), 1);
-    unsigned int maxProgress = bitmap->getWidth () * bitmap->getHeight ();
+//    unsigned int maxProgress = bitmap->getWidth () * bitmap->getHeight ();
 
     this->data.clear ();
 
@@ -289,7 +295,10 @@ PixelOutlineList::PixelOutlineList(Bitmap *bitmap, Color *bgColor)
     }
 
     // cleanup: // goto label
-    delete marked;
+    if (marked != nullptr)
+    {
+        delete marked;
+    }
 }
 
 void PixelOutlineList::appendPixelOutline(PixelOutline outline)

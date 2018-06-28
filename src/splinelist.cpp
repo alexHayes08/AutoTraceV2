@@ -142,7 +142,7 @@ SplineList::SplineList(CurveList &curveList,
         curveSplines = std::unique_ptr<SplineList>(this->fitCurve(&currentCurve, fittingOpts));
         if (curveSplines == nullptr)
         {
-            throw new std::runtime_error("Failed to fit the curve.");
+//            throw std::runtime_error("Failed to fit the curve.");
         }
         else
         {

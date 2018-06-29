@@ -66,7 +66,7 @@ private:
     unsigned short height;
     unsigned short width;
     std::vector<unsigned char> bitmap;
-    std::vector<Color> _bitmap;
+    std::map<Coord, Color> colors;
     unsigned int np;
     unsigned int height_of_pixel;
     unsigned int width_of_pixel;

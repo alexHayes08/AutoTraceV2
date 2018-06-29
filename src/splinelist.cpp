@@ -375,18 +375,17 @@ void SplineList::filter(Curve *curve, FittingOptions *fittingOpts)
  */
 void SplineList::removeKneePoints(Curve *curve, bool clockwise)
 {
-    unsigned i;
     unsigned offset = (curve->cyclic ? 0 : 1);
 
     Coord previous = Curve::realToIntCoord(curve->curvePoint((int)curve->prevCurveOf(offset)));
-    Curve trimmedCurve = *curve;
+    Curve *trimmedCurve = new Curve(*curve);
 
     if (!curve->cyclic)
     {
-        trimmedCurve.appendPixel(Curve::realToIntCoord(curve->curvePoint(0)));
+        trimmedCurve->appendPixel(Curve::realToIntCoord(curve->curvePoint(0)));
     }
 
-    for (i = offset; i < curve->pointList.size() - offset; i++)
+    for (unsigned i = offset; i < curve->pointList.size() - offset; i++)
     {
         Coord current = Curve::realToIntCoord(curve->curvePoint(i));
         Coord next = Curve::realToIntCoord(curve->curvePoint(curve->nextCurveOf(i)));
@@ -410,15 +409,15 @@ void SplineList::removeKneePoints(Curve *curve, bool clockwise)
         else
         {
             previous = current;
-            trimmedCurve.appendPixel(current);
+            trimmedCurve->appendPixel(current);
         }
     }
 
     if (!curve->cyclic)
-        trimmedCurve.appendPixel(Curve::realToIntCoord(curve->lastCurvePoint()));
+        trimmedCurve->appendPixel(Curve::realToIntCoord(curve->lastCurvePoint()));
 
 #ifdef DEBUG
-    if (trimmedCurve.pointList.size() == curve->pointList.size())
+    if (trimmedCurve->pointList.size() == curve->pointList.size())
     {
          std::cout << " (none) "
                    << std::endl;
@@ -426,8 +425,8 @@ void SplineList::removeKneePoints(Curve *curve, bool clockwise)
 #endif
 
     delete curve;
-    *curve = trimmedCurve;
-//    free (trimmedCurve);  /* free_curve? --- Masatake */
+    *curve = *trimmedCurve;
+    delete trimmedCurve;
 }
 
 SplineList *SplineList::fitCurve(Curve *curve,

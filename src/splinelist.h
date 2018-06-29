@@ -62,7 +62,7 @@ public:
     void changeBadLines(FittingOptions *fittingOpts);
 
     static void filter (Curve *curve, FittingOptions *fittingOpts);
-    static void removeKneePoints(Curve* curve, bool clockwise);
+    static void removeKneePoints(Curve *curve, bool clockwise);
     static SplineList *fitCurve(Curve *curve,
                                 FittingOptions *fittingOpts);
     static SplineList *fitWithLine(Curve curve);

@@ -29,6 +29,19 @@ Curve::~Curve()
 //    delete this->endTangent;
 }
 
+Curve& Curve::operator=(Curve other)
+{
+    std::cout << "Copy operator of Curve"
+              << std::endl;
+    this->cyclic = other.cyclic;
+    this->pointList = other.pointList;
+    this->previousCurve = other.previousCurve;
+    this->nextCurve = other.nextCurve;
+    this->startTangent = other.startTangent;
+    this->endTangent = other.endTangent;
+    return *this;
+}
+
 void Curve::appendPixel(Coord p)
 {
     this->appendPoint(intToRealCoord(p));

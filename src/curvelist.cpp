@@ -20,7 +20,7 @@ CurveList::~CurveList()
     this->data.clear();
 }
 
-void CurveList::appendCurve(Curve *c)
+void CurveList::appendCurve(std::shared_ptr<Curve> c)
 {
     this->data.push_back(c);
 }
@@ -32,12 +32,17 @@ int CurveList::length()
 
 Curve *CurveList::elt(int index)
 {
-    return this->data[index];
+    return this->data.at (index);
 }
 
-Curve *CurveList::lastElt()
+std::shared_ptr<Curve> CurveList::first()
 {
-    return this->data[this->data.size() - 1];
+    return this->data.front ();
+}
+
+Curve *CurveList::last()
+{
+    return this->data.at(this->data.size() - 1);
 }
 
 }

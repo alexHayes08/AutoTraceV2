@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <limits>
+#include <memory>
 #include <vector>
 
 namespace AutoTrace {
@@ -43,18 +44,21 @@ public:
     Curve(const Curve &original);
     ~Curve();
 
+    bool cyclic;
     std::vector<Point> pointList;
+
+    std::shared_ptr<Curve> previousCurve;
+    std::shared_ptr<Curve> nextCurve;
+
+    Vector *startTangent;
+    Vector *endTangent;
+
+    Curve& operator =(Curve other);
     RealCoord curvePoint(int index);
     RealCoord lastCurvePoint();
     float &curveT(int index);
     float &lastCurveT();
     int length();
-    bool cyclic;
-    Curve *previousCurve;
-    Curve *nextCurve;
-    Vector *startTangent;
-    Vector *endTangent;
-
     void appendPixel(Coord p);
     void appendPoint(RealCoord p);
     void findTangent(bool toStartPoint,

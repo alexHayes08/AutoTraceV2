@@ -36,24 +36,21 @@ namespace AutoTrace {
 class Bitmap
 {
 public:
-    Bitmap();
-    Bitmap(unsigned char *area,
+    Bitmap()
+        : Bitmap(std::vector<unsigned char>(), 0,0,0) {}
+    Bitmap(unsigned short width, unsigned short height, unsigned int planes)
+        : Bitmap(std::vector<unsigned char>(), width, height, planes) {}
+    Bitmap(const std::vector<unsigned char> area,
            unsigned short width,
            unsigned short height,
            unsigned int planes);
-    Bitmap(unsigned short width,
-           unsigned short height,
-           unsigned int planes);
-//    Bitmap(InputReader *reader, // at_bitmap_read
-//           std::string filename,
-//           InputOptions *opts);
     Bitmap(const Bitmap &original);
-    ~Bitmap();
+    ~Bitmap() {}
 
     unsigned short getWidth();
     unsigned short getHeight();
     unsigned int getPlanes();
-    unsigned char* getBitmap() const;
+    std::vector<Color> getColors() const;
     Color getColor(unsigned int row, unsigned int col);
     bool equalColorAt(Color color, unsigned int row, unsigned int col);
     bool isOutlineEdge(Edge edge,
@@ -63,16 +60,16 @@ public:
     unsigned char& atPixel (unsigned int row, unsigned int col);
     bool validPixel(unsigned int row, unsigned int col);
     void Binarize();
+    std::array<Color> getAdjacentPixel(Pixel &pixel, Direction direction);
 
 private:
-    void init(unsigned char *area,
-         unsigned short width,
-         unsigned short height,
-         unsigned int planes);
     unsigned short height;
     unsigned short width;
-    unsigned char *bitmap;
+    std::vector<unsigned char> bitmap;
+    std::vector<Color> _bitmap;
     unsigned int np;
+    unsigned int height_of_pixel;
+    unsigned int width_of_pixel;
 };
 
 }

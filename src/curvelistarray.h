@@ -17,16 +17,16 @@ class CurveListArray
 public:
     CurveListArray();
     CurveListArray(PixelOutlineList pixelList,
-                   FittingOptions *fittingOpts); // Split at corners
+                   FittingOptions &fittingOpts); // Split at corners
     ~CurveListArray();
     void appendCurveList(CurveList *c);
     std::vector<CurveList*> data;
     int length();
-    CurveList *elt(int index);
-    CurveList *lastElt();
+    std::shared_ptr<CurveList> elt(int index);
+    std::shared_ptr<CurveList> lastElt();
 
     static indexList findCorners (PixelOutline pixelOutline,
-                                  FittingOptions *fittingOpts);
+                                  FittingOptions &fittingOpts);
     static void findVectors(unsigned testIndex,
                             PixelOutline outline,
                             Vector *in,

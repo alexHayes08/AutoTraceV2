@@ -13,11 +13,11 @@ public:
     CurveList();
     CurveList(const CurveList &original);
     ~CurveList();
-    void appendCurve(Curve *c);
-    std::vector<Curve*> data;
+    void appendCurve(std::shared_ptr<Curve> c);
+    std::vector<std::shared_ptr<Curve>> data;
     int length();
     Curve *elt(int index);
-    Curve *lastElt();
+    Curve *last();
     bool clockwise;
     bool open;
 

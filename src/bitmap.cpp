@@ -2,44 +2,91 @@
 
 namespace AutoTrace {
 
-Bitmap::Bitmap()
-{
-    init(nullptr, 0,0,0);
-}
-
-Bitmap::Bitmap(unsigned char *area,
+Bitmap::Bitmap(const std::vector<unsigned char> area,
                unsigned short width,
                unsigned short height,
                unsigned int planes)
 {
-    init(area, width, height, planes);
+    this->bitmap = area;
+
+    if (0 == (width * height))
+        this->bitmap.clear();
+    else if (bitmap.size != width * height)
+        this->bitmap.reserve (width * height * np);
+
+    this->width = width;
+    this->height = height;
+    this->np = planes;
+    unsigned int row = 0;
+    unsigned int col = 0;
+
+    for (auto it = area.begin (); it != area.end();)
+    {
+        Color color;
+
+        // Increment
+        if (this->np == 1)
+        {
+            auto r = *it++;
+            auto g = *it++;
+            auto b = *it++;
+            color = color(r, g, b);
+        }
+        else
+        {
+            auto m = *it++;
+            color = m == 0 ? Color(0, 0, 0) : Color(255, 255, 255);
+        }
+
+        auto coord = Coord { x = col, y = row };
+
+        this->colors.insert (coord, color);
+
+        // Increment col/row.
+        if (col == this->width)
+        {
+            col = 0;
+            row++;
+        }
+        else
+        {
+            col++;
+        }
+    }
+
+    switch(this->np)
+    {
+    case 1:
+    {
+        for (auto it = area.begin (); it != area.end();)
+        {
+            auto isBlack = *it++;
+
+            auto color = isBlack == 0 ? Color(0, 0, 0) : Color(255, 255, 255);
+            auto coord = Coord { x = col, y = row };
+
+            this->colors.insert (coord, color);
+
+            // Increment col/row.
+            if (col == this->width)
+            {
+                col = 0;
+                row++;
+            }
+            else
+            {
+                col++;
+            }
+        }
+        break;
+    }
+    case 3:
+    {
+
+        break;
+    }
+    }
 }
-
-Bitmap::Bitmap(unsigned short width,
-               unsigned short height,
-               unsigned int planes)
-{
-    init (nullptr, width, height, planes);
-}
-
-//Bitmap::Bitmap(InputReader *reader,
-//               std::string filename,
-//               InputOptions *opts)
-//{
-//    bool newOptions = false;
-
-//    if (opts == nullptr)
-//    {
-//        opts = new InputOptions();
-//        newOptions = true;
-//    }
-
-//    // FIXME!
-//    this->bitmap = reader->func (filename, opts, reader->data);
-
-//    if (newOptions)
-//        delete opts;
-//}
 
 Bitmap::Bitmap(const Bitmap &original)
 {
@@ -47,37 +94,6 @@ Bitmap::Bitmap(const Bitmap &original)
     this->height = original.height;
     this->np = original.np;
     this->bitmap = original.bitmap;
-}
-
-Bitmap::~Bitmap ()
-{
-//    delete bitmap;
-//    bitmap = nullptr; // Set pointer to null after deleting it... this is good practice?
-}
-
-void Bitmap::init(unsigned char *area,
-                  unsigned short width,
-                  unsigned short height,
-                  unsigned int planes)
-{
-//    if (bitmap != nullptr)
-//        delete bitmap;
-
-    if (area)
-    {
-        this->bitmap = area;
-    }
-    else
-    {
-        if (0 == (width * height))
-            this->bitmap = nullptr;
-        else
-            this->bitmap = new unsigned char[width * height * planes * sizeof(unsigned char)];
-    }
-
-    this->width = width;
-    this->height = height;
-    this->np = planes;
 }
 
 Color Bitmap::getColor (unsigned int row, unsigned int col)
@@ -116,7 +132,7 @@ unsigned int Bitmap::getPlanes ()
     return this->np;
 }
 
-unsigned char* Bitmap::getBitmap () const
+std::vector<unsigned char> Bitmap::getBitmap () const
 {
     return this->bitmap;
 }

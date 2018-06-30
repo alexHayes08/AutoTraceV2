@@ -18,7 +18,8 @@ SOURCES += main.cpp \
     generictinputreader.cpp \
     inputoptions.cpp \
     inputparser.cpp \
-    signalexception.cpp
+    signalexception.cpp \
+    splinelistarray.cpp
 
 HEADERS += \
     generictinputreader.h \
@@ -27,4 +28,4 @@ HEADERS += \
     inputoptions.h \
     Exceptions/notimplementedexception.h \
     inputparser.h \
-    signalexception.h
+    splinelistarray.h

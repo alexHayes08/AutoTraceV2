@@ -18,7 +18,6 @@ SOURCES += main.cpp \
     generictinputreader.cpp \
     inputoptions.cpp \
     inputparser.cpp \
-    signalexception.cpp \
     splinelistarray.cpp
 
 HEADERS += \

@@ -4,6 +4,7 @@
 
 #include "generictinputreader.h"
 #include "inputparser.h"
+#include "splinelistarray.h"
 
 /**
  * @brief main - Run with the following arguments:
@@ -23,6 +24,7 @@ int main(int argc, char *argv[])
 
     QtAutoTraceV2::InputOptions inputOptions;
     QtAutoTraceV2::GenerictInputReader inputReader;
+    QtAutoTraceV2::SplineListArray splineListArr;
 
     QCommandLineParser parser;
     parser.setApplicationDescription("QtAutoTraceV2 is a utility for"
@@ -140,6 +142,9 @@ int main(int argc, char *argv[])
         onError);
     QObject::connect(&inputReader,
         &QtAutoTraceV2::GenerictInputReader::finishedReadingImage,
+        &splineListArr, QtAutoTraceV2::SplineListArray::run);
+
+    QObject::connect(&splineListArr, QtAutoTraceV2::SplineListArray::finished,
         programDone);
 
     // TODO: Create splines from QImage.

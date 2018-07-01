@@ -1,8 +1,11 @@
 #ifndef SPLINELISTARRAY_H
 #define SPLINELISTARRAY_H
 
+#include <QDebug>
+#include <QHash>
+#include <QImage>
+#include <QList>
 #include <QObject>
-#include <QMap>
 
 #include "inputoptions.h"
 
@@ -16,6 +19,7 @@ public:
     explicit SplineListArray(QObject *parent = nullptr);
 
 signals:
+    void finished();
 
 public slots:
     void run(QImage image, InputOptions inputOptions);

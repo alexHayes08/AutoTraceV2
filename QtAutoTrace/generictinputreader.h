@@ -19,7 +19,7 @@ public:
     explicit GenerictInputReader(QObject *parent = nullptr);
 
 signals:
-    void finishedReadingImage(QImage image);
+    void finishedReadingImage(QImage image, InputOptions inputOptions);
     void error(QException &exc);
 
 public slots:

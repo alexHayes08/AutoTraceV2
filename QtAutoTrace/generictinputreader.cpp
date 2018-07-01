@@ -24,7 +24,7 @@ void GenerictInputReader::readImage(InputOptions &inputOptions)
                  << image.size()
                  << endl;
 #endif
-        this->finishedReadingImage(image);
+        this->finishedReadingImage(image, inputOptions);
     }
 }
 

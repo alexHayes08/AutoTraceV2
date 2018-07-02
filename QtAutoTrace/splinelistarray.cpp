@@ -25,23 +25,31 @@ void SplineListArray::run(QImage image, InputOptions inputOptions)
         }
     }
 
-#ifdef QT_DEBUG
-    for (auto it = colorMap.begin(); it != colorMap.end(); it++)
+    // Retrieve all unique colors.
+    auto uniqueKeys = colorMap.uniqueKeys ();
+
+    for (auto it = uniqueKeys.begin(); it != uniqueKeys.end(); it++)
     {
+#ifdef QT_DEBUG
         qDebug() << "Color: "
-                 << it.key()
+                 << QColor(*it)
                  << endl
                  << "\tNumber of Points: "
-                 << colorMap.values(it.key()).size()
+                 << colorMap.values(*it).size()
                  << endl
                  << "\t% of image: "
-                 << colorMap.values(it.key()).size() / (width * height)
+                 << double(colorMap.values(*it).size()) / double((width * height)) * 100
+                 << "%"
                  << endl
                  << "\tnumber of entries: "
-                 << colorMap.values(it.key()).size()
+                 << colorMap.values(*it).size()
                  << endl;
-    }
 #endif
+
+        // Seperate the pixel coords for each color into their bounding boxes.
+        auto pixels = colorMap.values(*it);
+        QList<QList<QPoint>> boundingBoxes;
+    }
 
     this->finished();
 }

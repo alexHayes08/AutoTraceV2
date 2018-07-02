@@ -142,9 +142,9 @@ int main(int argc, char *argv[])
         onError);
     QObject::connect(&inputReader,
         &QtAutoTraceV2::GenerictInputReader::finishedReadingImage,
-        &splineListArr, QtAutoTraceV2::SplineListArray::run);
+        &splineListArr, &QtAutoTraceV2::SplineListArray::run);
 
-    QObject::connect(&splineListArr, QtAutoTraceV2::SplineListArray::finished,
+    QObject::connect(&splineListArr, &QtAutoTraceV2::SplineListArray::finished,
         programDone);
 
     // TODO: Create splines from QImage.

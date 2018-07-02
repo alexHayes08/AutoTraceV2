@@ -48,7 +48,37 @@ void SplineListArray::run(QImage image, InputOptions inputOptions)
 
         // Seperate the pixel coords for each color into their bounding boxes.
         auto pixels = colorMap.values(*it);
-        QList<QList<QPoint>> boundingBoxes;
+        QVector<QVector<AdjacentPoints>> boundingBoxes;
+        QVector<AdjacentPoints> adjacentPoints;
+        int currentIndex = 0;
+
+        // Create an adjacent poins object for each pixel.
+        for (auto it = pixels.begin(); it != pixels.end(); it++)
+        {
+            auto currentList = boundingBoxes.value(currentIndex, QVector<QPoint>());
+            auto pixel = *it;
+
+            // Check for a pixel of the same color in the eight surrounding
+            // pixels.
+            adjacentPoints.append(AdjacentPoints(
+                QSize(image.width(), image.height()),
+                currentList,
+                pixel));
+        }
+
+        // Group the adjacent pixels if they contain a reference to the other
+        // pixel.
+
+#ifdef QT_DEBUG
+        // Print out all bounding boxes.
+        for (auto it = boundingBoxes.begin(); it != boundingBoxes.end(); it++)
+        {
+            auto bbox = *it;
+            qDebug() << "bbox size: "
+                     << bbox.size()
+                     << endl;
+        }
+#endif
     }
 
     this->finished();

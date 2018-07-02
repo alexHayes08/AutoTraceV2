@@ -4,9 +4,10 @@
 #include <QDebug>
 #include <QHash>
 #include <QImage>
-#include <QList>
 #include <QObject>
+#include <QVector>
 
+#include "adjacentpoints.h"
 #include "inputoptions.h"
 
 namespace QtAutoTraceV2

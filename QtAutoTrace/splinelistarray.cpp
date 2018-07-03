@@ -55,7 +55,7 @@ void SplineListArray::run(QImage image, InputOptions inputOptions)
         // Create an adjacent poins object for each pixel.
         for (auto it = pixels.begin(); it != pixels.end(); it++)
         {
-            auto currentList = boundingBoxes.value(currentIndex, QVector<QPoint>());
+            QVector<QPoint> currentList = boundingBoxes.value(currentIndex, QVector<QPoint>());
             auto pixel = *it;
 
             // Check for a pixel of the same color in the eight surrounding

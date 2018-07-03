@@ -3,7 +3,7 @@
 
 #include <QList>
 #include <QSize>
-#include <Vector>
+#include <QVector>
 
 namespace QtAutoTraceV2
 {
@@ -54,7 +54,7 @@ public:
     static QVector<AdjacentPoints> GroupPoints(QSize size,
         QVector<QPoint> points);
 
-private:
+//private:
     static AdjacentDirection ArePointsAdjacent(const QPoint a, const QPoint b);
     static QVector<AdjacentPoints> RetreiveAllConnectedPoints(
         QVector<AdjacentPoints> points,

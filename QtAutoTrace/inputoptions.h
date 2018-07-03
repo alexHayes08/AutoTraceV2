@@ -11,6 +11,7 @@ class InputOptions
 public:
     bool showProgress;
     bool override;
+	bool getInfo;
     QString inputFileName;
     QString inputFileFormat;
     QString outputFileName;

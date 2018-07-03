@@ -8,12 +8,15 @@ SplineListArray::SplineListArray(QObject *parent) : QObject(parent)
 
 void SplineListArray::run(QImage image, InputOptions inputOptions)
 {
-    // * Get most common colors
-    // * Sort by most to least common
+    // * Get most common colors.
+    // * Sort by most to least common.
     QHash<QRgb, QPoint> colorMap;
-
-    auto width = image.height();
-    auto height = image.width();
+	auto width = image.height();
+	auto height = image.width();
+	auto numberOfPixels = height * width;
+	auto numberOfMarkedPixels = 0;
+	QVector<PixelData> unmarkedPixels;
+	QVector<QVector<PixelData>> pixelGroups;
 
     for (int row = 0; row < height; row++)
     {
@@ -21,65 +24,118 @@ void SplineListArray::run(QImage image, InputOptions inputOptions)
         {
             QColor color = image.pixelColor(col, row);
             QPoint point = QPoint(col, row);
+			PixelData pixelData;
+			pixelData.color = color;
+			pixelData.coord = point;
+			unmarkedPixels.append(pixelData);
             colorMap.insertMulti(color.rgb(), point);
         }
     }
 
+	while (unmarkedPixels.size() > 0)
+	{
+		PixelData pixelData = unmarkedPixels.takeFirst();
+		QVector<PixelData> connectedPixels = { pixelData };
+		
+		// Don't check diagnol adjacency, only north/west/south/east.
+		auto filter = [=](PixelData a, PixelData b)
+		{
+			// Return false if the colors aren't the same.
+			if (a.color != b.color)
+			{
+				return false;
+			}
+
+			// Check north.
+			if (a.coord.x() == b.coord.x()
+				&& a.coord.y() == b.coord.y() - 1)
+			{
+				return true;
+			}
+			// Check west.
+			else if (a.coord.x() == b.coord.x() - 1
+				&& a.coord.y() == b.coord.y())
+			{
+				return true;
+			}
+			// Check south.
+			else if (a.coord.x() == b.coord.x()
+				&& a.coord.y() == b.coord.y() + 1)
+			{
+				return true;
+			}
+			// Check east.
+			else if (a.coord.x() == b.coord.x() - 1
+				&& a.coord.y() == b.coord.y())
+			{
+				return true;
+			}
+			// Not adjacent.
+			else
+			{
+				return false;
+			}
+		};
+
+		for (qint64 i = 0; i < unmarkedPixels.size(); ++i)
+		{
+			auto otherPixel = unmarkedPixels[i];
+
+			for (int ii = 0; ii < connectedPixels.size(); ii++)
+			{
+				auto connectedPixel = connectedPixels[ii];
+				if (filter(connectedPixel, otherPixel))
+				{
+					// Found match, append to group.
+					connectedPixels.append(unmarkedPixels.takeAt(i));
+
+					// Restart the loop.
+					i = -1;
+					break;
+				}
+			}
+		}
+
+		// Append to list of groups.
+		pixelGroups.append(connectedPixels);
+	}
+
     // Retrieve all unique colors.
     auto uniqueKeys = colorMap.uniqueKeys ();
-
-    for (auto it = uniqueKeys.begin(); it != uniqueKeys.end(); it++)
-    {
+	for (auto it = uniqueKeys.begin(); it != uniqueKeys.end(); it++)
+	{
 #ifdef QT_DEBUG
-        qDebug() << "Color: "
-                 << QColor(*it)
-                 << endl
-                 << "\tNumber of Points: "
-                 << colorMap.values(*it).size()
-                 << endl
-                 << "\t% of image: "
-                 << double(colorMap.values(*it).size()) / double((width * height)) * 100
-                 << "%"
-                 << endl
-                 << "\tnumber of entries: "
-                 << colorMap.values(*it).size()
-                 << endl;
+		qInfo() << "Color: "
+			<< QColor(*it)
+			<< endl
+			<< "\tNumber of Points: "
+			<< colorMap.values(*it).size()
+			<< endl
+			<< "\t% of image: "
+			<< double(colorMap.values(*it).size()) / double((width * height)) * 100
+			<< "%"
+			<< endl
+			<< "\tnumber of entries: "
+			<< colorMap.values(*it).size()
+			<< endl;
 #endif
-
-        // Seperate the pixel coords for each color into their bounding boxes.
-        auto pixels = colorMap.values(*it);
-        QVector<QVector<AdjacentPoints>> boundingBoxes;
-        QVector<AdjacentPoints> adjacentPoints;
-        int currentIndex = 0;
-
-        // Create an adjacent poins object for each pixel.
-        for (auto it = pixels.begin(); it != pixels.end(); it++)
-        {
-            QVector<QPoint> currentList = boundingBoxes.value(currentIndex, QVector<QPoint>());
-            auto pixel = *it;
-
-            // Check for a pixel of the same color in the eight surrounding
-            // pixels.
-            adjacentPoints.append(AdjacentPoints(
-                QSize(image.width(), image.height()),
-                currentList,
-                pixel));
-        }
-
-        // Group the adjacent pixels if they contain a reference to the other
-        // pixel.
+	}
 
 #ifdef QT_DEBUG
-        // Print out all bounding boxes.
-        for (auto it = boundingBoxes.begin(); it != boundingBoxes.end(); it++)
-        {
-            auto bbox = *it;
-            qDebug() << "bbox size: "
-                     << bbox.size()
-                     << endl;
-        }
+	qDebug() << "Shapes detected: "
+		<< pixelGroups.size()
+		<< endl;
+
+	// Print out all bounding boxes.
+	for (int i = 0; i < pixelGroups.size(); i++)
+	{
+		auto pixelGroup = pixelGroups[i];
+		qDebug() << "Shape #"
+			<< i
+			<< "size: "
+			<< pixelGroup.size();
+	}
 #endif
-    }
 
     this->finished();
 }

@@ -26,12 +26,10 @@ HEADERS += adjacentpoints.h \
            splinelistarray.h \
            Exceptions/filenotfoundexception.h \
            Exceptions/filereadexception.h \
-           Exceptions/notimplementedexception.h \
-           Tests/adjacentpointstest.h
+           Exceptions/notimplementedexception.h
 SOURCES += adjacentpoints.cpp \
            generictinputreader.cpp \
            inputoptions.cpp \
            inputparser.cpp \
            main.cpp \
-           splinelistarray.cpp \
-           Tests/adjacentpointstest.cpp
+           splinelistarray.cpp

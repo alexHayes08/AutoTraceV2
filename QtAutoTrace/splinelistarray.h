@@ -2,6 +2,7 @@
 #define SPLINELISTARRAY_H
 
 #include <QDebug>
+#include <QException>
 #include <QHash>
 #include <QImage>
 #include <QObject>
@@ -9,6 +10,7 @@
 
 #include "adjacentpoints.h"
 #include "inputoptions.h"
+#include "pixeldata.h"
 
 namespace QtAutoTraceV2
 {
@@ -21,6 +23,7 @@ public:
 
 signals:
     void finished();
+	void error(QException &exception);
 
 public slots:
     void run(QImage image, InputOptions inputOptions);

@@ -12,6 +12,11 @@
 namespace QtAutoTraceV2
 {
 
+/**
+ * In the original AutoTrace program they have multiple input readers for
+ * various types of files, however since Qt can handle all of them this class
+ * will most likely be merged into the spline list array class.
+ */
 class GenerictInputReader : public QObject
 {
     Q_OBJECT

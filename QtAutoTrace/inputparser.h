@@ -3,6 +3,7 @@
 
 #include <QDebug>
 #include <QException>
+#include <QFileInfo>
 #include <QObject>
 
 #include "Exceptions/filereadexception.h"

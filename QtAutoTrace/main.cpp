@@ -1,6 +1,7 @@
 #include <QCommandLineParser>
 #include <QCoreApplication>
 #include <QDebug>
+#include <QPoint>
 
 #include "generictinputreader.h"
 #include "inputparser.h"
@@ -69,6 +70,11 @@ int main(int argc, char *argv[])
         "format");
     parser.addOption(inputFormatOption);
 
+	QCommandLineOption infoOption("info",
+		QCoreApplication::translate("main",
+			"Retrieves info about the image such as the ten most common colors"
+			" and the percentage of the image they cover."));
+
     // Process arguments.
     parser.process(app);
 
@@ -78,6 +84,7 @@ int main(int argc, char *argv[])
     // Retrieve arguments.
     inputOptions.showProgress = parser.isSet(showProgressOption);
     inputOptions.override = parser.isSet(forceOption);
+	inputOptions.getInfo = parser.isSet(infoOption);
 
     if (parser.isSet(inputFileOption))
         inputOptions.inputFileName = parser.value(inputFileOption);
@@ -94,25 +101,6 @@ int main(int argc, char *argv[])
 #ifdef QT_DEBUG
     qDebug() << "Running from: "
              << app.applicationFilePath()
-             << endl;
-    qDebug() << "Command line args:" << endl;
-    qDebug() << "\tShow progress: "
-             << inputOptions.showProgress
-             << endl;
-    qDebug() << "\tOverride output file: "
-             << inputOptions.override
-             << endl;
-    qDebug() << "\tInput format: "
-             << inputOptions.inputFileFormat
-             << endl;
-    qDebug() << "\tInput file: "
-             << inputOptions.inputFileName
-             << endl;
-    qDebug() << "\tOutput format: "
-             << inputOptions.outputFileFormat
-             << endl;
-    qDebug() << "\tOutput file: "
-             << inputOptions.outputFileName
              << endl;
 #endif
 
@@ -144,10 +132,11 @@ int main(int argc, char *argv[])
         &QtAutoTraceV2::GenerictInputReader::finishedReadingImage,
         &splineListArr, &QtAutoTraceV2::SplineListArray::run);
 
+	// TODO: Create splines from QImage.
+	QObject::connect(&splineListArr, &QtAutoTraceV2::SplineListArray::error,
+		onError);
     QObject::connect(&splineListArr, &QtAutoTraceV2::SplineListArray::finished,
         programDone);
-
-    // TODO: Create splines from QImage.
 
     // TODO: Convert splines into svg elements (such as path).
 

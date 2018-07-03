@@ -51,7 +51,7 @@ public:
 
     bool isEmpty();
 
-    static QVector<AdjacentPoints> GroupPoints(QSize size,
+    static QVector<QVector<AdjacentPoints>> GroupPoints(QSize size,
         QVector<QPoint> points);
 
 //private:

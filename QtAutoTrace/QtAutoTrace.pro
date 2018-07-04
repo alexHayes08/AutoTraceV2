@@ -26,10 +26,18 @@ HEADERS += adjacentpoints.h \
            splinelistarray.h \
            Exceptions/filenotfoundexception.h \
            Exceptions/filereadexception.h \
-           Exceptions/notimplementedexception.h
+           Exceptions/notimplementedexception.h \
+    adjacentpixels.h \
+    pixeldata.h \
+    pixelgroup.h \
+    svgelement.h \
+    svgelementfactory.h
 SOURCES += adjacentpoints.cpp \
            generictinputreader.cpp \
            inputoptions.cpp \
            inputparser.cpp \
            main.cpp \
-           splinelistarray.cpp
+           splinelistarray.cpp \
+    pixelgroup.cpp \
+    svgelement.cpp \
+    svgelementfactory.cpp

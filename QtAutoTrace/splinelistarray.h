@@ -8,6 +8,7 @@
 #include <QObject>
 #include <QVector>
 
+#include "adjacentpixels.h"
 #include "adjacentpoints.h"
 #include "inputoptions.h"
 #include "pixeldata.h"

@@ -19,5 +19,7 @@ namespace QtAutoTraceV2
 		auto firstPoint = points.first();
 		auto lastPoint = points.last();
 		auto generalAngle = (lastPoint.y - firstPoint.y) / (lastPoint.x - firstPoint.x);
+
+        throw std::runtime_error("Not implemented.");
 	}
 }

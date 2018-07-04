@@ -2,6 +2,7 @@
 #define PIXELGROUP_H
 
 #include <algorithm>
+#include <exception>
 
 #include <QPoint>
 #include <QRect>
@@ -39,12 +40,14 @@ public:
 	QVector<QPoint> getPixels() const;
 	QRect getBBox() const;
 	QVector<QPoint> getOutline() const;
+    bool isFilled();
 
 private:
 	QRect bbox;
 	QVector<QPoint> pixels;
 	QVector<QPoint*> outline;
 	bool closed;
+    bool filled;
 };
 
 }

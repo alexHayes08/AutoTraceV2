@@ -6,6 +6,7 @@
 #include <QVector>
 
 #include "pixeldata.h"
+#include "pixelgroup.h"
 
 namespace QtAutoTraceV2
 {

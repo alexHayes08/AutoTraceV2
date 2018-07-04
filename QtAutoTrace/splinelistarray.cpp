@@ -36,46 +36,6 @@ void SplineListArray::run(QImage image, InputOptions inputOptions)
 	{
 		PixelData pixelData = unmarkedPixels.takeFirst();
 		QVector<PixelData> connectedPixels = { pixelData };
-		
-		// Don't check diagnol adjacency, only north/west/south/east.
-		auto filter = [=](PixelData a, PixelData b)
-		{
-			// Return false if the colors aren't the same.
-			if (a.color != b.color)
-			{
-				return false;
-			}
-
-			// Check north.
-			if (a.coord.x() == b.coord.x()
-				&& a.coord.y() == b.coord.y() - 1)
-			{
-				return true;
-			}
-			// Check west.
-			else if (a.coord.x() == b.coord.x() - 1
-				&& a.coord.y() == b.coord.y())
-			{
-				return true;
-			}
-			// Check south.
-			else if (a.coord.x() == b.coord.x()
-				&& a.coord.y() == b.coord.y() + 1)
-			{
-				return true;
-			}
-			// Check east.
-			else if (a.coord.x() == b.coord.x() - 1
-				&& a.coord.y() == b.coord.y())
-			{
-				return true;
-			}
-			// Not adjacent.
-			else
-			{
-				return false;
-			}
-		};
 
 		for (qint64 i = 0; i < unmarkedPixels.size(); ++i)
 		{
@@ -84,7 +44,7 @@ void SplineListArray::run(QImage image, InputOptions inputOptions)
 			for (int ii = 0; ii < connectedPixels.size(); ii++)
 			{
 				auto connectedPixel = connectedPixels[ii];
-				if (filter(connectedPixel, otherPixel))
+				if (ArePixelsAdjacent(connectedPixel, otherPixel) != AdjacentResult::NOTADJACENT)
 				{
 					// Found match, append to group.
 					connectedPixels.append(unmarkedPixels.takeAt(i));

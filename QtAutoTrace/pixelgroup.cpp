@@ -44,12 +44,23 @@ namespace QtAutoTraceV2
 		// Assign closed, to determine this each point must have two other points
 		// adjacent to it.
 		auto outline = this->getOutline();
-		bool isClosed = std::all_of(this->getOutline().begin(),
+        this->closed = std::all_of(this->getOutline().begin(),
 			this->getOutline().end(),
 			[outline](QPoint point)
 			{
 				return IsPointOutliningAndCyclic(point, outline);
 			});
+
+        // Assign filled, determine if each pixel inside the outline is present.
+        if (this->isClosed()) {
+
+            // TODO: Check that every pixel inside the outline is present.
+            throw std::runtime_error("Not yet implemented.");
+        }
+        else
+        {
+            this->filled = false;
+        }
 
 		// Next step is to retrieve the outline points that which has a different
 		// angle than the previous pair of points.
@@ -64,6 +75,11 @@ namespace QtAutoTraceV2
 	{
 		return this->closed;
 	}
+
+    bool PixelGroup::isFilled()
+    {
+        return this->filled;
+    }
 
 	QVector<QPoint> PixelGroup::getPixels() const
 	{

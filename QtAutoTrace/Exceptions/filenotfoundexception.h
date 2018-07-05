@@ -6,6 +6,10 @@
 namespace QtAutoTraceV2
 {
 
+/**
+ * @brief The FileNotFoundException class is similar to the C#
+ * FileNotFoundException class.
+ */
 class FileNotFoundException : public QException
 {
 public:

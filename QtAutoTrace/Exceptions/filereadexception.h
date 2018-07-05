@@ -6,6 +6,10 @@
 namespace QtAutoTraceV2
 {
 
+/**
+ * @brief The FileReadException class is thrown when the file exists but the
+ * reader failed to interpret the files' contents.
+ */
 class FileReadException : public QException
 {
 public:

@@ -6,8 +6,12 @@
 
 struct PixelData
 {
-	QColor color;
-	QPoint coord;
+    QColor color;
+    QPoint coord;
+
+    // Might remove these fields...
+    bool curveStart;
+    bool curveEnd;
 };
 
 #endif // PIXELDATA_H

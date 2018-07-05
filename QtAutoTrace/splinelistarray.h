@@ -9,7 +9,6 @@
 #include <QVector>
 
 #include "adjacentpixels.h"
-#include "adjacentpoints.h"
 #include "inputoptions.h"
 #include "pixeldata.h"
 
@@ -24,7 +23,7 @@ public:
 
 signals:
     void finished();
-	void error(QException &exception);
+    void error(QException &exception);
 
 public slots:
     void run(QImage image, InputOptions inputOptions);

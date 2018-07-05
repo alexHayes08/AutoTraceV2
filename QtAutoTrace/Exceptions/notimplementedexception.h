@@ -6,6 +6,10 @@
 namespace QtAutoTraceV2
 {
 
+/**
+ * @brief The NotImplementedException class is similar to C#'s
+ * NotImplementedException class.
+ */
 class NotImplementedException : public QException
 {
 public:

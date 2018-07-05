@@ -6,6 +6,7 @@
 #include "common.h"
 #include "inputoptions.h"
 #include "inputreader.h"
+#include "pixel.h"
 
 #include <string.h>
 
@@ -60,7 +61,7 @@ public:
     unsigned char& atPixel (unsigned int row, unsigned int col);
     bool validPixel(unsigned int row, unsigned int col);
     void Binarize();
-    std::array<Color> getAdjacentPixel(Pixel &pixel, Direction direction);
+//    std::array<Color> getAdjacentPixel(Pixel &pixel, Direction direction);
 
 private:
     unsigned short height;

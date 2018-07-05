@@ -63,7 +63,7 @@ private:
                              int number,
                              int size,
                              int *grey);
-    static unsigned char* ReadImage (FILE *fd,
+    static std::vector<unsigned char> ReadImage(FILE *fd,
                                      int width,
                                      int height,
                                      unsigned char cmap[256][3],

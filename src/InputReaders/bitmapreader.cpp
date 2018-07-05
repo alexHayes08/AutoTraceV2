@@ -23,7 +23,7 @@ Bitmap *BitmapReader::func(std::string filename,
     int ColormapSize, rowbytes, Maps, Grey;
     unsigned char ColorMap[256][3];
     Bitmap *image;
-    unsigned char *imageStorage;
+    std::vector<unsigned char> imageStorage;
     BitmapFileHead bitmapFileHead;
     BitmapHead bitmapHead;
 
@@ -185,7 +185,7 @@ Bitmap *BitmapReader::func(std::string filename,
         image = new Bitmap(imageStorage,
                            (unsigned short) bitmapHead.biWidth,
                            (unsigned short) bitmapHead.biHeight,
-                           Grey ? 1 : 3);
+                           Grey ? (unsigned short)1 : (unsigned short)3);
     }
     catch (std::string e)
     {
@@ -242,7 +242,7 @@ int BitmapReader::ReadColorMap (FILE *fd,
     return 0;
 }
 
-unsigned char* BitmapReader::ReadImage (FILE *fd,
+std::vector<unsigned char> BitmapReader::ReadImage (FILE *fd,
                                         int width,
                                         int height,
                                         unsigned char cmap[256][3],
@@ -253,7 +253,7 @@ unsigned char* BitmapReader::ReadImage (FILE *fd,
 {
     unsigned char v, howmuch;
     int xpos = 0, ypos = 0;
-    unsigned char *image;
+    std::vector<unsigned char> image;
     unsigned char *temp;//, *buffer;
     long rowstride, channels;
     unsigned short rgb;
@@ -261,17 +261,17 @@ unsigned char* BitmapReader::ReadImage (FILE *fd,
 
     if (bpp >= 16) // color image
     {
-        image = new unsigned char[width * height * 3 * sizeof(unsigned char)];
+        image.reserve(width * height * 3);
         channels = 3;
     }
     else if (grey) // grey image
     {
-        image = new unsigned char[width * height * 1 * sizeof(unsigned char)];
+        image.reserve(width * height * 1);
         channels = 1;
     }
     else // indexed range
     {
-        image = new unsigned char[width * height * 1 * sizeof(unsigned char)];
+        image.reserve(width * height * 1);
         channels = 1;
     }
 
@@ -279,13 +279,16 @@ unsigned char* BitmapReader::ReadImage (FILE *fd,
 //    unsigned char tempa[rowbytes] = { };
     unsigned char buffer[rowbytes];
 
+    auto imageIt = image.begin();
+    unsigned index = 0;
     ypos = height - 1; // Bitmaps begin in the lower left corner
     switch (bpp)
     {
     case 32:
         while (ReadOK (fd, buffer, rowbytes))
         {
-            temp = image + (ypos * rowstride);
+            index = ypos + rowstride;
+            temp = image.at(ypos * rowstride);
             for (xpos = 0; xpos < width; ++xpos)
             {
                 *(temp++) = buffer[xpos * 4 + 2];

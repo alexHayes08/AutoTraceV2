@@ -32,17 +32,17 @@ int CurveList::length()
 
 Curve *CurveList::elt(int index)
 {
-    return this->data.at (index);
+    return this->data.at (index).get();
 }
 
-std::shared_ptr<Curve> CurveList::first()
+Curve CurveList::first()
 {
-    return this->data.front ();
+    return *(this->data.front ().get());
 }
 
 Curve *CurveList::last()
 {
-    return this->data.at(this->data.size() - 1);
+    return this->data.at(this->data.size() - 1).get();
 }
 
 }

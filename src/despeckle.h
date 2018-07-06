@@ -113,7 +113,7 @@ private:
                              double noiseMax,
                              int width,
                              int height,
-                             unsigned char *bitmap);
+                             std::vector<unsigned char> *bitmap);
     static void DespeckleIteration8 (int level,
                              double adaptiveTightness,
                              double noiseMax,

@@ -11,14 +11,14 @@ Bitmap::Bitmap(const std::vector<unsigned char> area,
 
     if (0 == (width * height))
         this->bitmap.clear();
-    else if (bitmap.size != width * height)
+    else if (bitmap.size() != width * height)
         this->bitmap.reserve (width * height * np);
 
     this->width = width;
     this->height = height;
     this->np = planes;
-    unsigned int row = 0;
-    unsigned int col = 0;
+    unsigned short row = 0;
+    unsigned short col = 0;
 
     for (auto it = area.begin (); it != area.end();)
     {
@@ -30,7 +30,7 @@ Bitmap::Bitmap(const std::vector<unsigned char> area,
             auto r = *it++;
             auto g = *it++;
             auto b = *it++;
-            color = color(r, g, b);
+            color = Color(r, g, b);
         }
         else
         {
@@ -38,9 +38,9 @@ Bitmap::Bitmap(const std::vector<unsigned char> area,
             color = m == 0 ? Color(0, 0, 0) : Color(255, 255, 255);
         }
 
-        auto coord = Coord { x = col, y = row };
+        Coord coord { .x = col, .y = row };
 
-        this->colors.insert (coord, color);
+        this->colors[coord] = color;
 
         // Increment col/row.
         if (col == this->width)
@@ -63,9 +63,8 @@ Bitmap::Bitmap(const std::vector<unsigned char> area,
             auto isBlack = *it++;
 
             auto color = isBlack == 0 ? Color(0, 0, 0) : Color(255, 255, 255);
-            auto coord = Coord { x = col, y = row };
-
-            this->colors.insert (coord, color);
+            auto coord = Coord { .x = col, .y = row };
+            this->colors[coord] = color;
 
             // Increment col/row.
             if (col == this->width)
@@ -101,7 +100,7 @@ Color Bitmap::getColor (unsigned int row, unsigned int col)
     unsigned char *p;
     Color color;
 
-    p = this->bitmap + row * this->np * this->width + col * this->np;
+    *p = this->bitmap.at(row * this->np * this->width + col * this->np);
 
     if (this->np >= 3)
         color.set (p[0], p[1], p[2]);
@@ -176,40 +175,50 @@ bool Bitmap::validPixel(unsigned int row, unsigned int col)
     return bool (((row) < this->height) && ((col) < this->width));
 }
 
-void Bitmap::Binarize ()
-{
-    unsigned i, npixels, spp;
-    unsigned char *b;
+//void Bitmap::Binarize ()
+//{
+//    unsigned i, npixels, spp;
+//    unsigned char *b;
 
-    if (this->bitmap == nullptr)
-        throw "Error: Cannot binarize NULL bitmap!";
+//    if (this->bitmap.size() == 0)
+//        throw std::runtime_error("Error: Cannot binarize empty bitmap!");
 
-    b = this->bitmap;
-    spp = this->np;
-    npixels = this->height * this->width;
+//    spp = this->np;
+//    npixels = this->height * this->width;
 
-    if (spp == 1)
-    {
-        for (i = 0; i < npixels; i++)
-        {
-            b[i] = (b[i] > GRAY_THRESHOLD ? WHITE : BLACK);
-        }
-    }
-    else if (spp == 3)
-    {
-        unsigned char *rgb = b;
-        for (i = 0; i < npixels; i++, rgb += 3)
-        {
-            b[i] = (Color(rgb[0], rgb[1], rgb[2]).luminance () > GRAY_THRESHOLD
-                    ? WHITE : BLACK);
-        }
+//    if (spp == 1)
+//    {
+////        for (i = 0; i < npixels; i++)
+//        for (auto it = this->bitmap.begin(); it != this->bitmap.end(); it++)
+//        {
+//            *it = (*it > GRAY_THRESHOLD ? WHITE : BLACK);
+//        }
+//    }
+//    else if (spp == 3)
+//    {
+//        unsigned char *rgb;
+//        for (auto it = this->bitmap.begin(); it != this->bitmap.end(); it++)
+////        for (i = 0; i < npixels; i++, rgb += 3)
+//        {
+//            auto r = *it;
 
-        this->np = 1;
-    }
-    else
-    {
-        throw "Error in Bitmap::Binarize(): The image had an unsupported number of planes!";
-    }
-}
+//            std::next(it, 1);
+//            auto g = *it;
+
+//            std::next(it, 1);
+//            auto b = *it;
+
+//            this->bitmap
+//            b[i] = (Color(rgb[0], rgb[1], rgb[2]).luminance () > GRAY_THRESHOLD
+//                ? WHITE : BLACK);
+//        }
+
+//        this->np = 1;
+//    }
+//    else
+//    {
+//        throw "Error in Bitmap::Binarize(): The image had an unsupported number of planes!";
+//    }
+//}
 
 }

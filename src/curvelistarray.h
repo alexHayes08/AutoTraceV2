@@ -20,7 +20,7 @@ public:
                    FittingOptions &fittingOpts); // Split at corners
     ~CurveListArray();
     void appendCurveList(CurveList *c);
-    std::vector<CurveList*> data;
+    std::vector<std::shared_ptr<CurveList>> data;
     int length();
     std::shared_ptr<CurveList> elt(int index);
     std::shared_ptr<CurveList> lastElt();

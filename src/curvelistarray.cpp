@@ -17,7 +17,7 @@ namespace AutoTrace {
 
 CurveListArray::CurveListArray()
 {
-    this->data = std::vector<CurveList*>();
+    this->data = std::vector<std::shared_ptr<CurveList>>();
 }
 
 // In original source code, this constructor is a function named
@@ -56,7 +56,8 @@ CurveListArray::CurveListArray(PixelOutlineList pixelList,
         std::shared_ptr<Curve> curve, firstCurve;
         indexList cornerList;
         unsigned p, thisCorner;
-        auto curveList = std::make_shared<CurveList>(new CurveList());
+        auto test = new CurveList();
+        auto curveList = std::make_shared<CurveList>(CurveList());
         PixelOutline pixel_o = pixelList.data[thisPixelO];
         curveList->clockwise = pixel_o.clockwise;
         curveList->open = pixel_o.open;
@@ -137,8 +138,8 @@ CurveListArray::CurveListArray(PixelOutlineList pixelList,
                     curve->appendPixel(pixel_o.data[p]);
 
                 curveList->appendCurve(curve);
-                curve = new Curve();
-                previousCurve->nextCurve = std::make_shared(curve);
+                curve = std::make_shared<Curve>(new Curve());
+                previousCurve->nextCurve = curve;
                 curve->previousCurve = previousCurve;
             }
 
@@ -160,7 +161,7 @@ CurveListArray::CurveListArray(PixelOutlineList pixelList,
             }
             else
             {
-                Curve *lastCurve = curve->previousCurve;
+                Curve *lastCurve = curve->previousCurve.get();
                 firstCurve->previousCurve = nullptr;
                 if (lastCurve)
                     lastCurve->nextCurve = nullptr;
@@ -193,7 +194,11 @@ CurveListArray::~CurveListArray()
 
 void CurveListArray::appendCurveList(CurveList *c)
 {
-    this->data.push_back(c);
+    if (c == nullptr)
+        throw std::runtime_error("CurveList cannot be null.");
+
+    CurveList &ref = *c;
+    this->data.push_back(std::make_shared<CurveList>(ref));
 }
 
 int CurveListArray::length()

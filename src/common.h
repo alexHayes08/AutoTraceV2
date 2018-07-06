@@ -10,6 +10,21 @@ namespace AutoTrace {
 struct Coord
 {
     unsigned short x,y;
+    bool operator==(const Coord &coord) const
+    {
+        return this->x == coord.x
+            && this->y == coord.y;
+    }
+    bool operator<(const Coord &coord) const
+    {
+        if (coord.y > this->y) {
+            return true;
+        } else if (coord.y == this->y) {
+            return this->x < coord.x;
+        } else {
+            return false;
+        }
+    }
 };
 
 struct ImageHeader

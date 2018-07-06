@@ -484,15 +484,15 @@ void Despeckle::Ignore (int x,
     x2--;
 
     if (!(x1 >= 0 && x2 < width))
-    throw "Unknown error in Despeckle::Ignore!";
+        throw "Unknown error in Despeckle::Ignore!";
 
     for (x = x1; x <= x2; x++)
     mask[y * width + x] = 3;
 
     for (x = x1; x <= x2; x++)
     {
-    Ignore (x, y - 1, width, height, mask);
-    Ignore (x, y + 1, width, height, mask);
+        Ignore (x, y - 1, width, height, mask);
+        Ignore (x, y + 1, width, height, mask);
     }
 }
 
@@ -535,21 +535,21 @@ bool Despeckle::Recolor (double adaptiveTightness,
     /* This condition only fails if the bitmap is all the same color */
     if (toIndex != nullptr)
     {
-    /*
-     * If the difference between the two colors is too great,
-     * don't coalesce the feature with its neighbor(s).  This prevents a
-     * color from turning into its complement.
-     */
-    if (CalcError (index, toIndex) > maxError)
-    {
-        Fill (index, x, y, width, height, bitmap, mask);
-    }
-    else
-    {
-        Fill (toIndex, x, y, width, height, bitmap, mask);
+        /*
+         * If the difference between the two colors is too great,
+         * don't coalesce the feature with its neighbor(s).  This prevents a
+         * color from turning into its complement.
+         */
+        if (CalcError (index, toIndex) > maxError)
+        {
+            Fill (index, x, y, width, height, bitmap, mask);
+        }
+        else
+        {
+            Fill (toIndex, x, y, width, height, bitmap, mask);
 
-        return true;
-    }
+            return true;
+        }
     }
 
     return false;
@@ -628,7 +628,7 @@ void Despeckle::DespeckleIteration (int level,
                                     double noiseMax,
                                     int width,
                                     int height,
-                                    unsigned char *bitmap)
+                                    std::vector<unsigned char> *bitmap)
 {
     unsigned char *mask;
     int x, y;
@@ -642,41 +642,41 @@ void Despeckle::DespeckleIteration (int level,
     mask = (unsigned char*) calloc (width * height, sizeof(unsigned char));
     for (y = 0; y < height; y++)
     {
-    for (x = 0; x < width; x++)
-    {
-        if (mask[y * width + x] == 0)
+        for (x = 0; x < width; x++)
         {
-        int size;
-
-        size = FindSize (&bitmap[3 * (y * width + x)], x, y, width, height, bitmap, mask);
-
-        if (!(size > 0))
-            throw "Unkown error in Despeckle::DespeckleIteration()!";
-
-        if (size < currentSize)
-        {
-            if (Recolor (tightness, x, y, width, height, bitmap, mask))
+            if (mask[y * width + x] == 0)
             {
-            x--;
+                int size;
+
+                size = FindSize (&bitmap[3 * (y * width + x)], x, y, width, height, bitmap, mask);
+
+                if (!(size > 0))
+                    throw "Unkown error in Despeckle::DespeckleIteration()!";
+
+                if (size < currentSize)
+                {
+                    if (Recolor (tightness, x, y, width, height, bitmap, mask))
+                    {
+                        x--;
+                    }
+                }
+                else
+                {
+                    Ignore (x, y, width, height, mask);
+                }
             }
         }
-        else
-        {
-            Ignore (x, y, width, height, mask);
-        }
-        }
-    }
     }
 
     free (mask);
 }
 
 void Despeckle::DespeckleIteration8 (int level,
-                                     double adaptiveTightness,
-                                     double noiseMax,
-                                     int width,
-                                     int height,
-                                     unsigned char *bitmap)
+     double adaptiveTightness,
+     double noiseMax,
+     int width,
+     int height,
+     unsigned char *bitmap)
 {
     unsigned char *mask;
     int x, y;
@@ -690,30 +690,30 @@ void Despeckle::DespeckleIteration8 (int level,
     mask = (unsigned char*) calloc (width * height, sizeof(unsigned char));
     for (y = 0; y < height; y++)
     {
-    for (x = 0; x < width; x++)
-    {
-        if (mask[y * width + x] == 0)
+        for (x = 0; x < width; x++)
         {
-        int size;
-
-        size = FindSize8 (&bitmap[3 * (y * width + x)], x, y, width, height, bitmap, mask);
-
-        if (!(size > 0))
-            throw "Unkown error in Despeckle::DespeckleIteration()!";
-
-        if (size < currentSize)
-        {
-            if (Recolor8 (tightness, x, y, width, height, bitmap, mask))
+            if (mask[y * width + x] == 0)
             {
-            x--;
+                int size;
+
+                size = FindSize8 (&bitmap[3 * (y * width + x)], x, y, width, height, bitmap, mask);
+
+                if (!(size > 0))
+                    throw "Unkown error in Despeckle::DespeckleIteration()!";
+
+                if (size < currentSize)
+                {
+                    if (Recolor8 (tightness, x, y, width, height, bitmap, mask))
+                    {
+                        x--;
+                    }
+                }
+                else
+                {
+                    Ignore (x, y, width, height, mask);
+                }
             }
         }
-        else
-        {
-            Ignore (x, y, width, height, mask);
-        }
-        }
-    }
     }
 
     free (mask);
@@ -726,7 +726,7 @@ void Despeckle::DespeckleBitmap (Bitmap &bitmap,
 {
     int i, planes, maxLevel;
     short width, height;
-    unsigned char *bits;
+    std::vector<unsigned char> bits;
     double noiseMax, adaptiveTightness;
 
     planes = bitmap.getPlanes ();
@@ -743,21 +743,21 @@ void Despeckle::DespeckleBitmap (Bitmap &bitmap,
 
     if (planes == 3)
     {
-    for (i = 0; i < level; i++)
-    {
-        DespeckleIteration (i, adaptiveTightness, noiseMax, width, height, bits);
-    }
+        for (i = 0; i < level; i++)
+        {
+            DespeckleIteration (i, adaptiveTightness, noiseMax, width, height, bits);
+        }
     }
     else if (planes == 1)
     {
-    for (i = 0; i < level; i++)
-    {
-        DespeckleIteration8 (i, adaptiveTightness, noiseMax, width, height, bits);
-    }
+        for (i = 0; i < level; i++)
+        {
+            DespeckleIteration8 (i, adaptiveTightness, noiseMax, width, height, bits);
+        }
     }
     else
     {
-    throw "Error in Despeckle::DespeckleBitmap: The number of planes in the bitmap is not supported!";
+        throw "Error in Despeckle::DespeckleBitmap: The number of planes in the bitmap is not supported!";
     }
 }
 

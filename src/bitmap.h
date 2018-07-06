@@ -9,6 +9,7 @@
 #include "pixel.h"
 
 #include <string.h>
+#include <map>
 
 namespace AutoTrace {
 
@@ -55,12 +56,15 @@ public:
     Color getColor(unsigned int row, unsigned int col);
     bool equalColorAt(Color color, unsigned int row, unsigned int col);
     bool isOutlineEdge(Edge edge,
-                       unsigned short row,
-                       unsigned short col,
-                       Color color);
+       unsigned short row,
+       unsigned short col,
+       Color color);
     unsigned char& atPixel (unsigned int row, unsigned int col);
     bool validPixel(unsigned int row, unsigned int col);
-    void Binarize();
+
+    // Binarize isn't used anywhere, commenting it out for now.
+//    void Binarize();
+    std::vector<unsigned char> getBitmap() const;
 //    std::array<Color> getAdjacentPixel(Pixel &pixel, Direction direction);
 
 private:

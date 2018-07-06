@@ -17,6 +17,7 @@ public:
     std::vector<std::shared_ptr<Curve>> data;
     int length();
     Curve *elt(int index);
+    Curve first();
     Curve *last();
     bool clockwise;
     bool open;

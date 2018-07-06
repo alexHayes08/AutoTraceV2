@@ -1,6 +1,14 @@
 #include "svgelementfactory.h"
 
-SvgElementFactory::SvgElementFactory()
+namespace QtAutoTraceV2
 {
+
+SvgElementFactory::SvgElementFactory()
+{ }
+
+SvgElement *SvgElementFactory::createElement(PixelGroup pixels) const
+{
+    throw NotImplementedException();
+}
 
 }

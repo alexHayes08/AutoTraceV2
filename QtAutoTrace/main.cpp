@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <QCommandLineParser>
 #include <QCoreApplication>
 #include <QDebug>
@@ -6,6 +8,7 @@
 #include "generictinputreader.h"
 #include "inputparser.h"
 #include "splinelistarray.h"
+#include "terminalhelper.h"
 
 /**
  * @brief main - Run with the following arguments:
@@ -70,10 +73,10 @@ int main(int argc, char *argv[])
         "format");
     parser.addOption(inputFormatOption);
 
-	QCommandLineOption infoOption("info",
-		QCoreApplication::translate("main",
-			"Retrieves info about the image such as the ten most common colors"
-			" and the percentage of the image they cover."));
+    QCommandLineOption infoOption("info",
+        QCoreApplication::translate("main",
+            "Retrieves info about the image such as the ten most common colors"
+            " and the percentage of the image they cover."));
 
     // Process arguments.
     parser.process(app);
@@ -84,7 +87,7 @@ int main(int argc, char *argv[])
     // Retrieve arguments.
     inputOptions.showProgress = parser.isSet(showProgressOption);
     inputOptions.override = parser.isSet(forceOption);
-	inputOptions.getInfo = parser.isSet(infoOption);
+    inputOptions.getInfo = parser.isSet(infoOption);
 
     if (parser.isSet(inputFileOption))
         inputOptions.inputFileName = parser.value(inputFileOption);
@@ -117,6 +120,27 @@ int main(int argc, char *argv[])
         QCoreApplication::exit();
     };
 
+    auto onBeforeShowProgress = [=](QString progressBarTitle) {
+        std::cout << std::endl;
+
+        if (!progressBarTitle.isEmpty())
+        {
+            std::cout << progressBarTitle.toStdString() << std::endl;
+        }
+    };
+
+    auto onShowProgress = [=](double amountDone, double total) {
+        if (amountDone == total) {
+            std::cout << std::endl;
+        } else {
+            double percentage = amountDone / total;
+        }
+    };
+
+    auto onAfterShowProgress = [=]() {
+
+    };
+
     // Hook up all signal/slots here.
 
     // Parse input args.
@@ -132,9 +156,9 @@ int main(int argc, char *argv[])
         &QtAutoTraceV2::GenerictInputReader::finishedReadingImage,
         &splineListArr, &QtAutoTraceV2::SplineListArray::run);
 
-	// TODO: Create splines from QImage.
-	QObject::connect(&splineListArr, &QtAutoTraceV2::SplineListArray::error,
-		onError);
+    // TODO: Create splines from QImage.
+    QObject::connect(&splineListArr, &QtAutoTraceV2::SplineListArray::error,
+        onError);
     QObject::connect(&splineListArr, &QtAutoTraceV2::SplineListArray::finished,
         programDone);
 
@@ -144,7 +168,21 @@ int main(int argc, char *argv[])
 
     // Can't call function directly on the inputReader before the event loop
     // starts else we won't have access to the event loop.
-    QMetaObject::invokeMethod(&inputParser, "run", Qt::QueuedConnection);
+//    QMetaObject::invokeMethod(&inputParser, "run", Qt::QueuedConnection);
 
-    return app.exec();
+    std::cout << "\x1b[35m colorized 1 2 3" << std::endl;
+    std::cout << "\x5b" << std::endl;
+
+    QtAutoTraceV2::TerminalHelper helper;
+    helper.clear()
+        .left()
+        .left(2)
+        .print("Testing A B C", Qt::GlobalColor::blue, false)
+        .backspace()
+        .newLine()
+        .print("");
+
+    return 0;
+
+//    return app.exec();
 }

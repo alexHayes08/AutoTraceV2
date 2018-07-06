@@ -6,6 +6,7 @@
 #include <limits>
 
 #include <QPoint>
+#include <QVector>
 
 #include "pixeldata.h"
 

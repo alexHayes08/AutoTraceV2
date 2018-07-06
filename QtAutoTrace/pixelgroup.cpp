@@ -8,10 +8,10 @@ namespace QtAutoTraceV2
         this->pixels = pixels;
 
         // Assign bbox.
-        qint64 top = pixels.first().y;
-        qint64 left = pixels.first().x;
-        qint64 right = top;
-        qint64 bottom = left;
+        int top = pixels.first().y();
+        int left = pixels.first().x();
+        int right = top;
+        int bottom = left;
 
         for (auto i = 1; i < pixels.size(); i++)
         {
@@ -25,8 +25,8 @@ namespace QtAutoTraceV2
             right = x > right ? x : right;
         }
 
-        auto width = right - left;
-        auto height = bottom - top;
+        int width = right - left;
+        int height = bottom - top;
 
         this->bbox = QRect(left, top, width, height);
 
@@ -35,7 +35,7 @@ namespace QtAutoTraceV2
         for (auto it = this->getPixels().begin(); it != this->getPixels().end(); it++)
         {
             auto point = *it;
-            if (!IsSurrounded(point, this->getPixels()))
+            if (!AdjacentPixels::IsSurrounded(point, this->getPixels()))
             {
                 this->outline.append(&point);
             }
@@ -48,7 +48,7 @@ namespace QtAutoTraceV2
             this->getOutline().end(),
             [outline](QPoint point)
             {
-                return IsPointOutliningAndCyclic(point, outline);
+                return AdjacentPixels::IsPointOutliningAndCyclic(point, outline);
             });
 
         // Assign filled, determine if each pixel inside the outline is present.
@@ -103,7 +103,7 @@ namespace QtAutoTraceV2
 
     QVector<QPoint> PixelGroup::getInflectionPoints() const
     {
-        QVector<QPoint> inflectionPoints();
+        QVector<QPoint> inflectionPoints;
 
         // Rate of change of the inflection angle
         double d_m;
@@ -147,6 +147,6 @@ namespace QtAutoTraceV2
                 point.x() - nextPoint.x());
         }
 
-        return inflectionPoints();
+        return inflectionPoints;
     }
 }

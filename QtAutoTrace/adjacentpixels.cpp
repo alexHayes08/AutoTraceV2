@@ -44,7 +44,7 @@ AdjacentResult AdjacentPixels::ArePixelsAdjacent(PixelData a, PixelData b)
         return AdjacentResult::NOTADJACENT;
     }
 
-    return QtAutoTraceV2::ArePointsAdjacent(a.coord, b.coord);
+    return AdjacentPixels::ArePointsAdjacent(a.coord, b.coord);
 }
 
 bool AdjacentPixels::IsSurrounded(QPoint p, QVector<QPoint> otherPoints)
@@ -57,7 +57,7 @@ bool AdjacentPixels::IsSurrounded(QPoint p, QVector<QPoint> otherPoints)
     for (auto it = otherPoints.begin(); it != otherPoints.end(); it++)
     {
         auto otherPoint = *it;
-        auto result = ArePointsAdjacent(p, otherPoint);
+        AdjacentResult result = AdjacentPixels::ArePointsAdjacent(p, otherPoint);
 
         switch (result)
         {
@@ -73,6 +73,8 @@ bool AdjacentPixels::IsSurrounded(QPoint p, QVector<QPoint> otherPoints)
         case AdjacentResult::EAST:
             east = true;
             break;
+        default:
+            continue;
         }
 
         // Exit loop if done.
@@ -92,7 +94,7 @@ bool AdjacentPixels::IsPointOutliningAndCyclic(QPoint point,
 
     for (auto it = otherPoints.begin(); it != otherPoints.end(); it++)
     {
-        auto result = ArePointsAdjacent(point, *it);
+        auto result = AdjacentPixels::ArePointsAdjacent(point, *it);
 
         switch (result)
         {

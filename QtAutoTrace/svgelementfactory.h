@@ -3,6 +3,7 @@
 
 #include "pixelgroup.h"
 #include "svgelement.h"
+#include "Exceptions/notimplementedexception.h"
 
 namespace QtAutoTraceV2
 {
@@ -11,7 +12,7 @@ class SvgElementFactory
 {
 public:
     SvgElementFactory();
-    SvgElement createElement(PixelGroup pixels) const;
+    SvgElement *createElement(PixelGroup pixels) const;
 
 private:
     int tolerance;

@@ -6,6 +6,7 @@ QT += testlib svg
 TEMPLATE = app
 TARGET = QtAutoTrace
 INCLUDEPATH += .
+CONFIG += c++14
 
 # The following define makes your compiler warn you if you use any
 # feature of Qt which has been marked as deprecated (the exact warnings
@@ -31,7 +32,8 @@ HEADERS += \
     pixeldata.h \
     pixelgroup.h \
     svgelement.h \
-    svgelementfactory.h
+    svgelementfactory.h \
+    terminalhelper.h
 SOURCES += \
     generictinputreader.cpp \
     inputoptions.cpp \
@@ -41,8 +43,13 @@ SOURCES += \
     pixelgroup.cpp \
     svgelement.cpp \
     svgelementfactory.cpp \
-    adjacentpixels.cpp
+    adjacentpixels.cpp \
+    terminalhelper.cpp
 
 DISTFILES += \
     config.qdocconf \
     doc.qhp
+
+win32 {
+    LIBS += -lKernel32
+}

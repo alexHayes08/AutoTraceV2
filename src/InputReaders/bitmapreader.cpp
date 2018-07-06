@@ -291,6 +291,7 @@ std::vector<unsigned char> BitmapReader::ReadImage (FILE *fd,
             temp = image.at(ypos * rowstride);
             for (xpos = 0; xpos < width; ++xpos)
             {
+                *(imageIt++) = buffer[xpos * 4 + 2];
                 *(temp++) = buffer[xpos * 4 + 2];
                 *(temp++) = buffer[xpos * 4 + 1];
                 *(temp++) = buffer[xpos * 4];

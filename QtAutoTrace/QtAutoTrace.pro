@@ -33,7 +33,9 @@ HEADERS += \
     pixelgroup.h \
     svgelement.h \
     svgelementfactory.h \
-    terminalhelper.h
+    terminalhelper.h \
+    terminalsequences.h \
+    outputoptions.h
 SOURCES += \
     generictinputreader.cpp \
     inputoptions.cpp \
@@ -44,7 +46,9 @@ SOURCES += \
     svgelement.cpp \
     svgelementfactory.cpp \
     adjacentpixels.cpp \
-    terminalhelper.cpp
+    terminalhelper.cpp \
+    terminaloutputoptions.cpp \
+    outputoptions.cpp
 
 DISTFILES += \
     config.qdocconf \

@@ -308,7 +308,7 @@ const TerminalHelper &TerminalHelper::blinkCursor(bool enableBlinking) const
 
 const TerminalHelper &TerminalHelper::displayCursor(bool showCursor) const
 {
-    std::cout << displayCursor ? CSI "?25h" : CSI "25l";
+    std::cout << showCursor ? CSI "?25h" : CSI "25l";
     return *this;
 }
 

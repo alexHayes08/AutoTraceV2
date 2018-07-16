@@ -1,5 +1,4 @@
-#ifndef FILENOTFOUNDEXCEPTION_H
-#define FILENOTFOUNDEXCEPTION_H
+#pragma once
 
 #include <QException>
 
@@ -21,5 +20,3 @@ public:
         return new FileNotFoundException(*this);
     }
 };
-
-#endif // FILENOTFOUNDEXCEPTION_H

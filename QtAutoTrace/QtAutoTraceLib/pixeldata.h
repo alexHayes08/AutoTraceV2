@@ -1,5 +1,4 @@
-#ifndef PIXELDATA_H
-#define PIXELDATA_H
+#pragma once
 
 #include <QColor>
 #include <QPoint>
@@ -15,5 +14,3 @@ struct QTAUTOTRACELIBSHARED_EXPORT PixelData
     bool curveStart;
     bool curveEnd;
 };
-
-#endif // PIXELDATA_H

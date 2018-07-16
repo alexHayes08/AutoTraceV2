@@ -1,5 +1,4 @@
-#ifndef GENERICTINPUTREADER_H
-#define GENERICTINPUTREADER_H
+#pragma once
 
 #include <QException>
 #include <QDebug>
@@ -33,5 +32,3 @@ public slots:
 };
 
 }
-
-#endif // GENERICTINPUTREADER_H

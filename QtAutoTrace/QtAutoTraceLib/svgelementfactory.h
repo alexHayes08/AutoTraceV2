@@ -1,5 +1,4 @@
-#ifndef SVGELEMENTFACTORY_H
-#define SVGELEMENTFACTORY_H
+#pragma once
 
 #include "notimplementedexception.h"
 #include "pixelgroup.h"
@@ -20,5 +19,3 @@ private:
 };
 
 }
-
-#endif // SVGELEMENTFACTORY_H

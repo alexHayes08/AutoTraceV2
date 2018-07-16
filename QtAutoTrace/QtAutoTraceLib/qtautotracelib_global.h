@@ -1,5 +1,4 @@
-#ifndef QTAUTOTRACELIB_GLOBAL_H
-#define QTAUTOTRACELIB_GLOBAL_H
+#pragma once
 
 #include <QtCore/qglobal.h>
 
@@ -8,5 +7,3 @@
 #else
 #  define QTAUTOTRACELIBSHARED_EXPORT Q_DECL_IMPORT
 #endif
-
-#endif // QTAUTOTRACELIB_GLOBAL_H

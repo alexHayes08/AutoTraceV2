@@ -1,5 +1,4 @@
-#ifndef SVGELEMENT_H
-#define SVGELEMENT_H
+#pragma once
 
 #include <exception>
 #include <memory>
@@ -36,5 +35,3 @@ private:
 };
 
 }
-
-#endif

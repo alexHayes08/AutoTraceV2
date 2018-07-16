@@ -1,5 +1,4 @@
-#ifndef INPUTPARSER_H
-#define INPUTPARSER_H
+#pragma once
 
 #include <QDebug>
 #include <QException>
@@ -32,5 +31,3 @@ private:
 };
 
 }
-
-#endif // INPUTPARSER_H

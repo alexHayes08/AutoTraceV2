@@ -1,5 +1,4 @@
-#ifndef QTAUTOTRACELIB_H
-#define QTAUTOTRACELIB_H
+#pragma once
 
 #include <QDebug>
 #include <QException>
@@ -35,5 +34,3 @@ signals:
 };
 
 }
-
-#endif // QTAUTOTRACELIB_H

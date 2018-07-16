@@ -1,5 +1,4 @@
-#ifndef PIXELGROUP_H
-#define PIXELGROUP_H
+#pragma once
 
 #include <algorithm>
 #include <cmath>
@@ -54,5 +53,3 @@ private:
 };
 
 }
-
-#endif // PIXELGROUP_H

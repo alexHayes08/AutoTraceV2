@@ -1,5 +1,4 @@
-#ifndef ADJACENTPIXELS_H
-#define ADJACENTPIXELS_H
+#pragma once
 
 #include <cmath>
 #include <exception>
@@ -111,5 +110,3 @@ private:
 };
 
 }
-
-#endif

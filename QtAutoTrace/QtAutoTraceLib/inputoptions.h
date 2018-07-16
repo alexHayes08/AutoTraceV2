@@ -1,5 +1,4 @@
-#ifndef INPUTOPTIONS_H
-#define INPUTOPTIONS_H
+#pragma once
 
 #include <QString>
 
@@ -34,5 +33,3 @@ public:
 };
 
 }
-
-#endif // INPUTOPTIONS_H

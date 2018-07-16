@@ -1,5 +1,4 @@
-#ifndef NOTIMPLEMENTEDEXCEPTION_H
-#define NOTIMPLEMENTEDEXCEPTION_H
+#pragma once
 
 #include <QException>
 
@@ -23,5 +22,3 @@ public:
 };
 
 }
-
-#endif // NOTIMPLEMENTEDEXCEPTION_H

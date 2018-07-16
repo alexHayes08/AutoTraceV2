@@ -1,5 +1,4 @@
-#ifndef OUTPUTOPTIONS_H
-#define OUTPUTOPTIONS_H
+#pragma once
 
 #include "qtautotracelib_global.h"
 
@@ -95,5 +94,3 @@ public:
 };
 
 }
-
-#endif // OUTPUTOPTIONS_H

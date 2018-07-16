@@ -1,5 +1,4 @@
-#ifndef FILEREADEXCEPTION_H
-#define FILEREADEXCEPTION_H
+#pragma once
 
 #include <QException>
 
@@ -25,5 +24,3 @@ public:
 };
 
 }
-
-#endif // FILEREADEXCEPTION_H

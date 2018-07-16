@@ -1,5 +1,4 @@
-#ifndef SPLINELISTARRAY_H
-#define SPLINELISTARRAY_H
+#pragma once
 
 #include <QDebug>
 #include <QException>
@@ -31,5 +30,3 @@ public slots:
 };
 
 }
-
-#endif // SPLINELISTARRAY_H

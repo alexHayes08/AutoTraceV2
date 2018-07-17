@@ -10,6 +10,7 @@
 
 #include "generictinputreader.h"
 #include "inputoptions.h"
+#include "inputparser.h"
 #include "qtautotracelib_global.h"
 #include "splinelistarray.h"
 
@@ -24,12 +25,14 @@ public:
     void generateSvg(InputOptions &inputOptions);
 
 private:
+    InputParser inputParser;
     GenerictInputReader inputReader;
     SplineListArray splineListArray;
 
 signals:
     void readingImage(int percentDone);
     void generatingSplines(int percentDone);
+    void finished();
     void error(QException &exception);
 };
 

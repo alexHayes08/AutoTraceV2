@@ -17,17 +17,14 @@ class QTAUTOTRACELIBSHARED_EXPORT InputParser : public QObject
 {
     Q_OBJECT
 public:
-    explicit InputParser(InputOptions &inputOptions, QObject *parent = nullptr);
+    explicit InputParser(QObject *parent = nullptr);
 
 signals:
     void finished(InputOptions &options);
     void error(QException &exc);
 
 public slots:
-    void run();
-
-private:
-    InputOptions inputOptions;
+    void run(InputOptions &inputOptions);
 };
 
 }

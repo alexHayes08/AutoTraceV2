@@ -5,14 +5,12 @@ namespace QtAutoTraceV2
 
 InputParser::InputParser(InputOptions &inputOptions, QObject *parent)
     : QObject(parent)
-{
-    this->inputOptions = inputOptions;
-}
+{ }
 
-void InputParser::run()
+void InputParser::run(InputOptions &inputOptions)
 {
     // Verify the required arguments are being passed in.
-    if (this->inputOptions.inputFileName.isEmpty())
+    if (inputOptions.inputFileName.isEmpty())
     {
         qCritical() << "No input file specified.";
         QException &exc = *(new FileReadException());

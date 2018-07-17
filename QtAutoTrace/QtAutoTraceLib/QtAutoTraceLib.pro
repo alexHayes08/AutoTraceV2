@@ -30,7 +30,6 @@ SOURCES += \
         inputoptions.cpp \
         inputparser.cpp \
         pixelgroup.cpp \
-        outputoptions.cpp \
         qtautotracelib.cpp \
         splinelistarray.cpp \
         svgelementfactory.cpp \
@@ -47,7 +46,6 @@ HEADERS += \
         inputparser.h \
         notimplementedexception.h \
         pixeldata.h \
-        outputoptions.h \
         pixelgroup.h \
         qtautotracelib_global.h \
         qtautotracelib.h \

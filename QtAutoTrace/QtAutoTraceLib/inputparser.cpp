@@ -3,8 +3,7 @@
 namespace QtAutoTraceV2
 {
 
-InputParser::InputParser(InputOptions &inputOptions, QObject *parent)
-    : QObject(parent)
+InputParser::InputParser(QObject *parent) : QObject(parent)
 { }
 
 void InputParser::run(InputOptions &inputOptions)
@@ -54,7 +53,7 @@ void InputParser::run(InputOptions &inputOptions)
     qDebug() << endl;
 #endif
 
-    this->finished(this->inputOptions);
+    this->finished(inputOptions);
 }
 
 }

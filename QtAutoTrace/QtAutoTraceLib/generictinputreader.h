@@ -2,12 +2,15 @@
 
 #include <QException>
 #include <QDebug>
+#include <QFileInfo>
 #include <QImage>
 #include <QObject>
 
 #include "inputoptions.h"
 #include "filereadexception.h"
 #include "qtautotracelib_global.h"
+
+#define MEGABYTE 1000000
 
 namespace QtAutoTraceV2
 {
@@ -22,6 +25,10 @@ class QTAUTOTRACELIBSHARED_EXPORT GenerictInputReader : public QObject
     Q_OBJECT
 public:
     explicit GenerictInputReader(QObject *parent = nullptr);
+
+private:
+//    const int BufferSize = MEGABYTE;
+//    char buffer[BufferSize];
 
 signals:
     void finishedReadingImage(QImage image, InputOptions inputOptions);

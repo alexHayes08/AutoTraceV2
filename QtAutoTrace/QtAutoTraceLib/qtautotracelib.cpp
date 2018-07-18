@@ -2,32 +2,33 @@
 
 namespace QtAutoTraceV2
 {
+
 QtAutoTraceLib::QtAutoTraceLib(QObject *parent) : QObject(parent)
 {
-    this->inputParser = InputParser(this);
-    this->inputReader = GenerictInputReader(this);
-    this->splineListArray = SplineListArray(this);
+    this->inputParser.setParent(this);
+    this->inputReader.setParent(this);
+    this->splineListArray.setParent(this);
 
     QObject::connect(&this->inputParser, &InputParser::error,
-        &this, QtAutoTraceLib::error);
+        this, QtAutoTraceLib::error);
     QObject::connect(&this->inputParser, &InputParser::finished,
         &this->inputReader, &GenerictInputReader::readImage);
 
     QObject::connect(&this->inputReader, &GenerictInputReader::error,
-        &this, QtAutoTraceLib::error);
+        this, QtAutoTraceLib::error);
     QObject::connect(&this->inputReader, &GenerictInputReader::finishedReadingImage,
         &this->splineListArray, SplineListArray::run);
 
     QObject::connect(&this->splineListArray, &SplineListArray::error,
-        &this, &QtAutoTraceLib::error);
+        this, &QtAutoTraceLib::error);
     QObject::connect(&this->splineListArray, &SplineListArray::finished,
-        &this, &this->finished);
+        this, &this->finished);
 }
 
 void QtAutoTraceLib::generateSvg(InputOptions &inputOptions)
 {
     // First validate inputOptions.
-    this->parseInputs(inputOptions);
+    this->inputParser.run(inputOptions);
 
     this->inputReader.readImage(inputOptions);
     // Read the input file.
@@ -132,51 +133,4 @@ void QtAutoTraceLib::generateSvg(InputOptions &inputOptions)
     }
 }
 
-void QtAutoTraceLib::parseInputs(InputOptions &inputOptions)
-{
-    // Verify the required arguments are being passed in.
-    if (this->inputOptions.inputFileName.isEmpty())
-    {
-        qCritical() << "No input file specified.";
-        QException &exc = *(new FileReadException());
-        this->error(exc);
-    }
-
-    // Populate all unset options to defaults.
-
-    // Default dpi is 72.
-    if (inputOptions.dpi == 0)
-    {
-        inputOptions.dpi = 72;
-    }
-
-    // Default output format is svg.
-    if (inputOptions.outputFileFormat.isEmpty())
-    {
-        inputOptions.outputFileFormat = "svg";
-    }
-
-    // Default output filename is the input file name with the suffix replaced
-    // with svg.
-    if (inputOptions.outputFileName.isEmpty())
-    {
-        QFileInfo inputFileInfo(inputOptions.inputFileName);
-        inputOptions.outputFileName = inputFileInfo.completeBaseName()
-            + "." + inputOptions.outputFileFormat;
-    }
-
-    // Background color defaults to an empty string.
-    // Centerline defaults
-
-#ifdef QT_DEBUG
-    qDebug() << "Input Options:";
-    qDebug() << "\tShow progress: " << inputOptions.showProgress;
-    qDebug() << "\tOverride output file: " << inputOptions.override;
-    qDebug() << "\tInput format: " << inputOptions.inputFileFormat;
-    qDebug() << "\tInput file: " << inputOptions.inputFileName;
-    qDebug() << "\tOutput format: " << inputOptions.outputFileFormat;
-    qDebug() << "\tOutput file: " << inputOptions.outputFileName;
-    qDebug() << endl;
-#endif
-}
 }

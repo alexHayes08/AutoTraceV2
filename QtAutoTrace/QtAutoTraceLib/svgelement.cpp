@@ -3,23 +3,23 @@
 namespace QtAutoTraceV2
 {
 
-    std::unique_ptr<SvgElement> SvgElement::CreateElement(QVector<QPoint> points, int tolerance)
+bool SvgElement::isLine(const QVector<QPoint> points, const int tolerance)
+{
+    // Can't have a line of less than two points.
+    if (points.size() < 2)
     {
-        throw new std::runtime_error("Not implemented.");
+        return false;
     }
 
-    bool SvgElement::isLine(QVector<QPoint> points, int tolerance)
-    {
-        // Can't have a line of less than two points.
-        if (points.size() < 2)
-        {
-            return false;
-        }
+    auto firstPoint = points.first();
+    auto lastPoint = points.last();
+    auto generalAngle = (lastPoint.y() - firstPoint.y()) / (lastPoint.x() - firstPoint.x());
 
-        auto firstPoint = points.first();
-        auto lastPoint = points.last();
-        auto generalAngle = (lastPoint.y() - firstPoint.y()) / (lastPoint.x() - firstPoint.x());
+    throw NotImplementedException();
+}
 
-        throw std::runtime_error("Not implemented.");
-    }
+bool SvgElement::isCircle(const QVector<QPoint> points, const int tolerance)
+{
+    throw NotImplementedException();
+}
 }

@@ -1,6 +1,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
+#include "inputoptions.h"
 #include "qtautotracelib.h"
 
 int main(int argc, char *argv[])
@@ -12,6 +13,10 @@ int main(int argc, char *argv[])
         1,
         0,
         "QtAutoTraceLib");
+    qmlRegisterType<QtAutoTraceV2::InputOptions>("aperture.qtautotracelib",
+        1,
+        0,
+        "InputOptions");
 
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));

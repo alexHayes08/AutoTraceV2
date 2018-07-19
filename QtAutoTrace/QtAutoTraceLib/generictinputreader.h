@@ -31,7 +31,7 @@ private:
 //    char buffer[BufferSize];
 
 signals:
-    void finishedReadingImage(QImage image, InputOptions inputOptions);
+    void finishedReadingImage(QImage image, InputOptions &inputOptions);
     void error(QException &exc);
 
 public slots:

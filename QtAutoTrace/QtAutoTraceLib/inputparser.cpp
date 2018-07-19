@@ -13,7 +13,8 @@ void InputParser::run(InputOptions &inputOptions)
     {
         qCritical() << "No input file specified.";
         QException &exc = *(new FileReadException());
-        this->error(exc);
+        emit this->error(exc);
+        return;
     }
 
     // Populate all unset options to defaults.
@@ -53,7 +54,7 @@ void InputParser::run(InputOptions &inputOptions)
     qDebug() << endl;
 #endif
 
-    this->finished(inputOptions);
+    emit this->finished(inputOptions);
 }
 
 }

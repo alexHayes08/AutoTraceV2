@@ -11,6 +11,7 @@
 #include "generictinputreader.h"
 #include "inputoptions.h"
 #include "inputparser.h"
+#include "outputwriter.h"
 #include "qtautotracelib_global.h"
 #include "splinelistarray.h"
 
@@ -22,11 +23,12 @@ class QTAUTOTRACELIBSHARED_EXPORT QtAutoTraceLib : public QObject
     Q_OBJECT
 public:
     explicit QtAutoTraceLib(QObject *parent = nullptr);
-    void generateSvg(InputOptions &inputOptions);
+    Q_INVOKABLE void generateSvg(InputOptions &inputOptions);
 
 private:
     InputParser inputParser;
     GenerictInputReader inputReader;
+    OutputWriter outputWriter;
     SplineListArray splineListArray;
 
 signals:

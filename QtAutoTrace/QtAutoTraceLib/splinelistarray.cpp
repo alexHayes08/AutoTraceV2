@@ -6,7 +6,7 @@ namespace QtAutoTraceV2
 SplineListArray::SplineListArray(QObject *parent) : QObject(parent)
 { }
 
-void SplineListArray::run(QImage image, InputOptions inputOptions)
+void SplineListArray::run(QImage image, InputOptions &inputOptions)
 {
     // * Get most common colors.
     // * Sort by most to least common.
@@ -100,7 +100,22 @@ void SplineListArray::run(QImage image, InputOptions inputOptions)
         }
     }
 
-    this->finished();
+    QVector<SvgElement> elements;
+    for (QVector<PixelData> pixelGroup : pixelGroups)
+    {
+        SvgElement element;
+        for (PixelData point : pixelGroup)
+        {
+            element.outlinePoints.append(point.coord);
+        }
+
+        element.color = pixelGroup.first().color;
+    }
+
+    QRect size(0, 0, image.width(), image.height());
+    emit this->finished(elements,
+        size,
+        inputOptions);
 }
 
 }

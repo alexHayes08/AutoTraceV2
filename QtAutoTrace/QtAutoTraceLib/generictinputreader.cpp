@@ -13,7 +13,7 @@ void GenerictInputReader::readImage(InputOptions &inputOptions)
     if (!info.exists())
     {
         QException exc;
-        this->error(exc);
+        emit this->error(exc);
         return;
     }
 
@@ -29,7 +29,8 @@ void GenerictInputReader::readImage(InputOptions &inputOptions)
     {
         // Error occurred.
         QException exc;
-        this->error(exc);
+        emit this->error(exc);
+        return;
     }
     else
     {
@@ -40,7 +41,7 @@ void GenerictInputReader::readImage(InputOptions &inputOptions)
                  << image.size()
                  << endl;
 #endif
-        this->finishedReadingImage(image, inputOptions);
+        emit this->finishedReadingImage(image, inputOptions);
     }
 }
 

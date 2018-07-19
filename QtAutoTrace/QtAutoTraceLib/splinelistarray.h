@@ -11,6 +11,7 @@
 #include "inputoptions.h"
 #include "pixeldata.h"
 #include "qtautotracelib_global.h"
+#include "svgelement.h"
 
 namespace QtAutoTraceV2
 {
@@ -22,11 +23,13 @@ public:
     explicit SplineListArray(QObject *parent = nullptr);
 
 signals:
-    void finished();
+    void finished(QVector<SvgElement> &elements,
+        QRect &size,
+        InputOptions &inputOptions);
     void error(QException &exception);
 
 public slots:
-    void run(QImage image, InputOptions inputOptions);
+    void run(QImage image, InputOptions &inputOptions);
 };
 
 }

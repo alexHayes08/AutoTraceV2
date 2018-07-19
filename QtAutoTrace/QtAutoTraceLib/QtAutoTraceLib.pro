@@ -32,8 +32,8 @@ SOURCES += \
         pixelgroup.cpp \
         qtautotracelib.cpp \
         splinelistarray.cpp \
-        svgelementfactory.cpp \
-        svgelement.cpp
+        svgelement.cpp \
+    outputwriter.cpp
 
 HEADERS += \
         qtautotracelib.h \
@@ -50,8 +50,8 @@ HEADERS += \
         qtautotracelib_global.h \
         qtautotracelib.h \
         splinelistarray.h \
-        svgelementfactory.h \
-        svgelement.h
+        svgelement.h \
+    outputwriter.h
 
 unix {
     target.path = /usr/lib

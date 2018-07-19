@@ -9,8 +9,4 @@ struct QTAUTOTRACELIBSHARED_EXPORT PixelData
 {
     QColor color;
     QPoint coord;
-
-    // Might remove these fields...
-    bool curveStart;
-    bool curveEnd;
 };

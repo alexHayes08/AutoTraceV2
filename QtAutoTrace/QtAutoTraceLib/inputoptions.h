@@ -8,9 +8,9 @@
 namespace QtAutoTraceV2
 {
 
-class QTAUTOTRACELIBSHARED_EXPORT InputOptions : public QObject
+struct QTAUTOTRACELIBSHARED_EXPORT InputOptions
 {
-    Q_OBJECT
+    Q_GADGET
     Q_PROPERTY(bool showProgress MEMBER showProgress)
     Q_PROPERTY(bool override MEMBER override)
     Q_PROPERTY(bool displayNCursesInterface MEMBER displayNCursesInterface)
@@ -31,8 +31,9 @@ class QTAUTOTRACELIBSHARED_EXPORT InputOptions : public QObject
     Q_PROPERTY(bool preserveWidth MEMBER preserveWidth)
     Q_PROPERTY(bool removeAdjacentCorners MEMBER removeAdjacentCorners)
     Q_PROPERTY(quint8 tangentSurround MEMBER tangentSurround)
+
 public:
-    explicit InputOptions(QObject *parent = nullptr);
+//    explicit InputOptions(QObject *parent = nullptr);
     bool showProgress;
     bool override;
     bool displayNCursesInterface;
@@ -56,3 +57,5 @@ public:
 };
 
 }
+
+Q_DECLARE_METATYPE(QtAutoTraceV2::InputOptions)

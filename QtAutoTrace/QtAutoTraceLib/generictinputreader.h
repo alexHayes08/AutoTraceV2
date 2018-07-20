@@ -32,6 +32,7 @@ private:
 
 signals:
     void finishedReadingImage(QImage image, InputOptions &inputOptions);
+    void readingImage(int percentDone);
     void error(QException &exc);
 
 public slots:

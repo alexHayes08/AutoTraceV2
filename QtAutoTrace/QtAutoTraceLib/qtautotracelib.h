@@ -6,6 +6,7 @@
 #include <QImage>
 #include <QMap>
 #include <QObject>
+#include <QVariant>
 #include <QVector>
 
 #include "generictinputreader.h"
@@ -23,7 +24,9 @@ class QTAUTOTRACELIBSHARED_EXPORT QtAutoTraceLib : public QObject
     Q_OBJECT
 public:
     explicit QtAutoTraceLib(QObject *parent = nullptr);
-    Q_INVOKABLE void generateSvg(InputOptions &inputOptions);
+//    void generateSvg(InputOptions &inputOptions);
+    Q_INVOKABLE void generateSvg(InputOptions inputOptions);
+    Q_INVOKABLE void generateSvg(QVariant data);
 
 private:
     InputParser inputParser;

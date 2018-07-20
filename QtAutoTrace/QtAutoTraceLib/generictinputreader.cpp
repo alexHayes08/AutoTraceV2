@@ -8,6 +8,8 @@ GenerictInputReader::GenerictInputReader(QObject *parent) : QObject(parent)
 
 void GenerictInputReader::readImage(InputOptions &inputOptions)
 {
+    emit this->readingImage(0);
+
     // Get file info.
     QFileInfo info(inputOptions.inputFileName);
     if (!info.exists())
@@ -41,6 +43,7 @@ void GenerictInputReader::readImage(InputOptions &inputOptions)
                  << image.size()
                  << endl;
 #endif
+        emit this->readingImage(100);
         emit this->finishedReadingImage(image, inputOptions);
     }
 }

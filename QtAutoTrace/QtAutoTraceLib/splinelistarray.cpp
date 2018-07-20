@@ -8,13 +8,15 @@ SplineListArray::SplineListArray(QObject *parent) : QObject(parent)
 
 void SplineListArray::run(QImage image, InputOptions &inputOptions)
 {
+    emit this->generatingSplines(0);
+
     // * Get most common colors.
     // * Sort by most to least common.
     QHash<QRgb, QPoint> colorMap;
     auto width = image.height();
     auto height = image.width();
-    auto numberOfPixels = height * width;
-    auto numberOfMarkedPixels = 0;
+//    auto numberOfPixels = height * width;
+//    auto numberOfMarkedPixels = 0;
     QVector<PixelData> unmarkedPixels;
     QVector<QVector<PixelData>> pixelGroups;
 
@@ -113,6 +115,7 @@ void SplineListArray::run(QImage image, InputOptions &inputOptions)
     }
 
     QRect size(0, 0, image.width(), image.height());
+    emit this->generatingSplines(100);
     emit this->finished(elements,
         size,
         inputOptions);

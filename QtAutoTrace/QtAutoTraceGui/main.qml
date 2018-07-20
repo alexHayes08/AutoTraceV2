@@ -1,7 +1,7 @@
 import QtQuick 2.11
 import QtQuick.Controls 2.4
-import aperture.qtautotracelib 1.0
 import QtQuick.Dialogs 1.0
+import aperture.qtautotracelib 1.0
 
 ApplicationWindow {
     id: window
@@ -12,16 +12,45 @@ ApplicationWindow {
 
     QtAutoTraceLib {
         id: autoTrace
-    }
+        onError: {
+            stackView.push(resultsPage)
+        }
 
-    InputOptions {
-        id: inputOptions
+        onReadingImage: {
+            if (percentDone == 100) {
+                loadingPage.progressBar_readingImage.value = 1;
+                loadingPage.busyIndicator_readingImage.running = false
+            } else {
+                if (!loadingPage.busyIndicator_readingImage.running) {
+                    loadingPage.busyIndicator_readingImage.running = true;
+                }
+
+                loadingPage.progressBar_readingImage.value = percentDone / 100;
+            }
+        }
+
+        onGeneratingSplines: {
+            if (percentDone == 100) {
+                loadingPage.progressBar_generatingSplines.value = 1;
+                loadingPage.busyIndicator_generatingSplines.running = false;
+            } else {
+                if (!loadingPage.busyIndicator_generatingSplines.running) {
+                    loadingPage.busyIndicator_generatingSplines.running = true
+                }
+
+                loadingPage.progressBar_generatingSplines.value = percentDone / 100;
+            }
+        }
+
+        onFinished: {
+            stackView.push(resultsPage);
+        }
     }
 
     FileDialog {
         id: inputFileDialog
         title: "Select Image"
-        nameFilters: "Image files (*.png *.xpm *.jpg)"
+        nameFilters: "Image files (*.bmp *.png *.xpm *.jpg)"
         onAccepted: {
             var inputFileName = inputFileDialog.fileUrl.toString();
             homeForm.textField_inputFile.text = inputFileName;
@@ -47,17 +76,35 @@ ApplicationWindow {
         }
     }
 
-    HomeForm {
-        function onEditingInputOptionsFinished() {
-            inputOptions.inputFileName = homeForm.textField_inputFile.text;
-            inputOptions.outputFileName = homeForm.textField_outputFile.text;
-            var colorCount = Number(homeForm.textField_colorCount.text);
+    LoadingPage {
+        id: loadingPage
+    }
 
-            if (Number.isNaN(colorCount) || colorCount < 0) {
+    ResultsPage {
+        id: resultsPage
+        button_restart.onClicked: {
+            stackView.pop(homeForm);
+        }
+    }
+
+    HomeForm {
+        function getInputOptions() {
+            var inputOptions = {
+                inputFileName: homeForm.textField_inputFile.text,
+                outputFileName: homeForm.textField_outputFile.text,
+                colorCount: Number(homeForm.textField_colorCount.text)
+            };
+
+            if (Number.isNaN(inputOptions.colorCount)
+                    || inputOptions.colorCount < 0) {
                 inputOptions.colorCount = 0;
-            } else {
-                inputOptions.colorCount = colorCount;
             }
+
+            return inputOptions;
+        }
+
+        function onEditingInputOptionsFinished() {
+            var inputOptions = getInputOptions();
 
             var validInputFileName = inputOptions.inputFileName !== null
                 || inputOptions !== "";
@@ -94,7 +141,8 @@ ApplicationWindow {
             onEditingInputOptionsFinished();
         }
         button_generateSvg.onClicked: {
-            autoTrace.generateSvg(inputOptions);
+            autoTrace.generateSvg(getInputOptions());
+            stackView.push(loadingPage)
         }
     }
 
@@ -129,18 +177,18 @@ ApplicationWindow {
             anchors.fill: parent
 
             ItemDelegate {
-                text: qsTr("Page 1")
+                text: qsTr("Loading")
                 width: parent.width
                 onClicked: {
-                    stackView.push("Page1Form.ui.qml")
+                    stackView.push(loadingPage)
                     drawer.close()
                 }
             }
             ItemDelegate {
-                text: qsTr("Page 2")
+                text: qsTr("Results")
                 width: parent.width
                 onClicked: {
-                    stackView.push("Page2Form.ui.qml")
+                    stackView.push(resultsPage)
                     drawer.close()
                 }
             }

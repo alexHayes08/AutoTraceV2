@@ -15,7 +15,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp
 
-RESOURCES += qml.qrc
+RESOURCES += qml.qrc \
+    images.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
@@ -34,3 +35,5 @@ else:unix: LIBS += -L$$PWD/../build-QtAutoTraceLib-Desktop_Qt_5_11_1_MinGW_32bit
 
 INCLUDEPATH += $$PWD/../QtAutoTraceLib
 DEPENDPATH += $$PWD/../QtAutoTraceLib
+
+DISTFILES +=

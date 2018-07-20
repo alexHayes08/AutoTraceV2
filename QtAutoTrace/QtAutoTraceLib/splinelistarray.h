@@ -27,6 +27,7 @@ signals:
         QRect &size,
         InputOptions &inputOptions);
     void error(QException &exception);
+    void generatingSplines(int percentDone);
 
 public slots:
     void run(QImage image, InputOptions &inputOptions);

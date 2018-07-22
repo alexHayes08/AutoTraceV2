@@ -52,7 +52,9 @@ ApplicationWindow {
         title: "Select Image"
         nameFilters: "Image files (*.bmp *.png *.xpm *.jpg)"
         onAccepted: {
-            var inputFileName = inputFileDialog.fileUrl.toString();
+            var inputFileName = inputFileDialog.fileUrl
+                .toString()
+                .replace("file:///", "");
             homeForm.textField_inputFile.text = inputFileName;
 
             if (homeForm.textField_outputFile.text == null

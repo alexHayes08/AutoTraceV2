@@ -4,33 +4,29 @@ import QtQuick.Controls 2.4
 
 Item {
     id: container
-    property alias labelText: rectangle.color
+
+    property alias label_input: label_input
+    property alias textInput_input: textInput
 
     ColumnLayout {
         id: labelInputContainer
         spacing: 2
 
         Label {
-            id: inputLabel
+            id: label_input
             text: labelText
             wrapMode: Text.WordWrap
         }
 
-        Rectangle {
-            id: rectangle
-            width: 200
-            height: 200
-            color: "#00000000"
-            Layout.preferredHeight: 18
-            Layout.fillHeight: false
+        TextInput {
+            id: textInput
+            anchors.fill: parent
             Layout.fillWidth: true
-
-            TextInput {
-                id: textInput
-                anchors.fill: parent
-                Layout.fillWidth: true
-            }
         }
 
+        Label {
+            id: label_warning
+            text: ""
+        }
     }
 }

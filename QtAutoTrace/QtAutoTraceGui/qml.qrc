@@ -6,5 +6,6 @@
         <file>ResultsPage.ui.qml</file>
         <file>qtquickcontrols2.conf</file>
         <file>LabeledInput.qml</file>
+        <file>guiModel.js</file>
     </qresource>
 </RCC>

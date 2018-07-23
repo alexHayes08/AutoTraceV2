@@ -2,6 +2,7 @@ import QtQuick 2.11
 import QtQuick.Controls 2.4
 import QtQuick.Dialogs 1.0
 import aperture.qtautotracelib 1.0
+import "guiModel.guiModel.js" as GuiModel
 
 ApplicationWindow {
     id: window
@@ -9,6 +10,8 @@ ApplicationWindow {
     width: 640
     height: 480
     title: qsTr("QtAutoTraceV2 GUI")
+
+    var model = GuiModel.newGuidModel();
 
     QtAutoTraceLib {
         id: autoTrace
@@ -201,5 +204,7 @@ ApplicationWindow {
         id: stackView
         initialItem: homeForm
         anchors.fill: parent
+        anchors.top: drawer.Bottom
+//        ScrollBar.vertical: true
     }
 }

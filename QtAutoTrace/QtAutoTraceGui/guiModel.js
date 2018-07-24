@@ -4,25 +4,24 @@ var Steps = Object.freeze({
     RESULTS: 2
 });
 
-/**
- * Ctor for GuidModel object.
- * @param {object} forms
- * @returns {GuiModel}
- */
-function newGuiModel(forms) {
+var model = new function() {
     //#region Private
 
     var _error = null;
-    var _step = Steps.HOME
+    var _step = Steps.HOME;
+    var _inputFile = null;
+//    var _forms = forms;
 
     //#endregion
 
     //#region Public
     this.error = function(error) {
-        if (error) {
+        if (error &&  !this.hasError()) {
             this.step(Steps.RESULTS);
-            _error = error;
+            _error = error.what();
             return;
+        } else if (error && this.hasError()) {
+            throw new Error("Need to clear the current error before setting a new one.");
         } else {
             return _error;
         }
@@ -54,5 +53,4 @@ function newGuiModel(forms) {
         }
     }
     //#endregion
-    return model;
 }

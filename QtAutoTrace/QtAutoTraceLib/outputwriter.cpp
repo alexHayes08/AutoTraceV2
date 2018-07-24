@@ -10,7 +10,7 @@ void OutputWriter::generate(QVector<SvgElement> &elements,
     QRect &size,
     InputOptions &inputoptions)
 {
-    this->svgGenerator.setFileName(inputoptions.outputFileName);
+    this->svgGenerator.setFileName(inputoptions.outputFile.toString ());
     this->svgGenerator.setSize(QSize(size.width(), size.height()));
     this->svgGenerator.setDescription("Generated with QtAutoraceV2.");
     this->svgGenerator.setViewBox(QRect(0, 0, size.width(), size.height()));
@@ -43,7 +43,7 @@ void OutputWriter::generate(QVector<SvgElement> &elements,
             path.closeSubpath();
         }
 
-        path.simplified();
+//        path.simplified();
         painter.setPen(element.color);
         painter.drawPath(path);
     }

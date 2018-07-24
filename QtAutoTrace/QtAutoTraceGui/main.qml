@@ -2,7 +2,7 @@ import QtQuick 2.11
 import QtQuick.Controls 2.4
 import QtQuick.Dialogs 1.0
 import aperture.qtautotracelib 1.0
-import "guiModel.guiModel.js" as GuiModel
+import "guiModel.js" as GuiModel
 
 ApplicationWindow {
     id: window
@@ -11,15 +11,26 @@ ApplicationWindow {
     height: 480
     title: qsTr("QtAutoTraceV2 GUI")
 
-    var model = GuiModel.newGuidModel();
-
     QtAutoTraceLib {
         id: autoTrace
+
         onError: {
-            stackView.push(resultsPage)
+            if (exception === null) {
+                exception = {
+                    what: function() {
+                        return "Unknown error occurred.";
+                    }
+                }
+            }
+
+            GuiModel.model.error(exception);
         }
 
         onReadingImage: {
+            if (GuiModel.model.hasError()) {
+                return;
+            }
+
             if (percentDone == 100) {
                 loadingPage.progressBar_readingImage.value = 1;
                 loadingPage.busyIndicator_readingImage.running = false
@@ -33,6 +44,10 @@ ApplicationWindow {
         }
 
         onGeneratingSplines: {
+            if (GuiModel.model.hasError()) {
+                return;
+            }
+
             if (percentDone == 100) {
                 loadingPage.progressBar_generatingSplines.value = 1;
                 loadingPage.busyIndicator_generatingSplines.running = false;
@@ -46,6 +61,10 @@ ApplicationWindow {
         }
 
         onFinished: {
+            if (GuiModel.model.hasError()) {
+                return;
+            }
+
             stackView.push(resultsPage);
         }
     }

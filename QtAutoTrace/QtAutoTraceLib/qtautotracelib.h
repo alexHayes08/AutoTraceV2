@@ -24,9 +24,9 @@ class QTAUTOTRACELIBSHARED_EXPORT QtAutoTraceLib : public QObject
     Q_OBJECT
 public:
     explicit QtAutoTraceLib(QObject *parent = nullptr);
-//    void generateSvg(InputOptions &inputOptions);
     Q_INVOKABLE void generateSvg(InputOptions inputOptions);
     Q_INVOKABLE void generateSvg(QVariant data);
+    InputOptions inputOptions;
 
 private:
     InputParser inputParser;

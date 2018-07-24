@@ -29,11 +29,18 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-QtAutoTraceLib-Desktop_Qt_5_11_1_MinGW_32bit2-Debug/release/ -lQtAutoTraceLib
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-QtAutoTraceLib-Desktop_Qt_5_11_1_MinGW_32bit2-Debug/debug/ -lQtAutoTraceLib
-else:unix: LIBS += -L$$PWD/../build-QtAutoTraceLib-Desktop_Qt_5_11_1_MinGW_32bit2-Debug/ -lQtAutoTraceLib
+#win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-QtAutoTraceLib-Desktop_Qt_5_11_1_MinGW_32bit2-Debug/release/ -lQtAutoTraceLib
+#else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-QtAutoTraceLib-Desktop_Qt_5_11_1_MinGW_32bit2-Debug/debug/ -lQtAutoTraceLib
+#else:unix: LIBS += -L$$PWD/../build-QtAutoTraceLib-Desktop_Qt_5_11_1_MinGW_32bit2-Debug/ -lQtAutoTraceLib
+
+#INCLUDEPATH += $$PWD/../QtAutoTraceLib
+#DEPENDPATH += $$PWD/../QtAutoTraceLib
+
+DISTFILES +=
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-QtAutoTraceLib-Desktop-Debug/release/ -lQtAutoTraceLib
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-QtAutoTraceLib-Desktop-Debug/debug/ -lQtAutoTraceLib
+else:unix: LIBS += -L$$PWD/../build-QtAutoTraceLib-Desktop-Debug/ -lQtAutoTraceLib
 
 INCLUDEPATH += $$PWD/../QtAutoTraceLib
 DEPENDPATH += $$PWD/../QtAutoTraceLib
-
-DISTFILES +=

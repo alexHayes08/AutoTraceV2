@@ -9,7 +9,7 @@ InputParser::InputParser(QObject *parent) : QObject(parent)
 void InputParser::run(InputOptions &inputOptions)
 {
     // Verify the required arguments are being passed in.
-    if (inputOptions.inputFileName.isEmpty())
+    if (inputOptions.inputFile.isEmpty())
     {
         qCritical() << "No input file specified.";
         QException &exc = *(new FileReadException());
@@ -25,19 +25,13 @@ void InputParser::run(InputOptions &inputOptions)
         inputOptions.dpi = 72;
     }
 
-    // Default output format is svg.
-    if (inputOptions.outputFileFormat.isEmpty())
-    {
-        inputOptions.outputFileFormat = "svg";
-    }
-
     // Default output filename is the input file name with the suffix replaced
     // with svg.
-    if (inputOptions.outputFileName.isEmpty())
+    if (inputOptions.outputFile.isEmpty())
     {
-        QFileInfo inputFileInfo(inputOptions.inputFileName);
-        inputOptions.outputFileName = inputFileInfo.completeBaseName()
-            + "." + inputOptions.outputFileFormat;
+        QFileInfo inputFileInfo(inputOptions.inputFile.path ());
+        inputOptions.outputFile= inputFileInfo.completeBaseName()
+            + ".svg";
     }
 
     // Background color defaults to an empty string.
@@ -47,10 +41,8 @@ void InputParser::run(InputOptions &inputOptions)
     qDebug() << "Input Options:";
     qDebug() << "\tShow progress: " << inputOptions.showProgress;
     qDebug() << "\tOverride output file: " << inputOptions.override;
-    qDebug() << "\tInput format: " << inputOptions.inputFileFormat;
-    qDebug() << "\tInput file: " << inputOptions.inputFileName;
-    qDebug() << "\tOutput format: " << inputOptions.outputFileFormat;
-    qDebug() << "\tOutput file: " << inputOptions.outputFileName;
+    qDebug() << "\tInput file: " << inputOptions.inputFile;
+    qDebug() << "\tOutput file: " << inputOptions.outputFile;
     qDebug() << endl;
 #endif
 

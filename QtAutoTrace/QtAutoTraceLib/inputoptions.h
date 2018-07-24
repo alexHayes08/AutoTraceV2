@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QUrl>
 
 #include "qtautotracelib_global.h"
 
@@ -14,10 +15,10 @@ struct QTAUTOTRACELIBSHARED_EXPORT InputOptions
     Q_PROPERTY(bool showProgress MEMBER showProgress)
     Q_PROPERTY(bool override MEMBER override)
     Q_PROPERTY(bool displayNCursesInterface MEMBER displayNCursesInterface)
-    Q_PROPERTY(QString inputFileName MEMBER inputFileName)
-    Q_PROPERTY(QString inputFileFormat MEMBER inputFileFormat)
-    Q_PROPERTY(QString outputFileName MEMBER outputFileName)
-    Q_PROPERTY(QString outputFileFormat MEMBER outputFileFormat)
+    Q_PROPERTY(bool preserveWidth MEMBER preserveWidth)
+    Q_PROPERTY(bool removeAdjacentCorners MEMBER removeAdjacentCorners)
+    Q_PROPERTY(QUrl inputFile MEMBER inputFile)
+    Q_PROPERTY(QUrl outputFile MEMBER outputFile)
     Q_PROPERTY(QString backgroundColor MEMBER backgroundColor)
     Q_PROPERTY(QString centerline MEMBER centerline)
     Q_PROPERTY(qint8 colorCount MEMBER colorCount)
@@ -26,21 +27,19 @@ struct QTAUTOTRACELIBSHARED_EXPORT InputOptions
     Q_PROPERTY(qint8 despeckleTightness MEMBER despeckleTightness)
     Q_PROPERTY(quint8 dpi MEMBER dpi)
     Q_PROPERTY(quint8 filterIterations MEMBER filterIterations)
+    Q_PROPERTY(quint8 tangentSurround MEMBER tangentSurround)
     Q_PROPERTY(qreal lineReversionThreshold MEMBER lineReversionThreshold)
     Q_PROPERTY(qreal lineThreshold MEMBER lineThreshold)
-    Q_PROPERTY(bool preserveWidth MEMBER preserveWidth)
-    Q_PROPERTY(bool removeAdjacentCorners MEMBER removeAdjacentCorners)
-    Q_PROPERTY(quint8 tangentSurround MEMBER tangentSurround)
 
 public:
 //    explicit InputOptions(QObject *parent = nullptr);
     bool showProgress;
     bool override;
     bool displayNCursesInterface;
-    QString inputFileName;
-    QString inputFileFormat;
-    QString outputFileName;
-    QString outputFileFormat;
+    bool preserveWidth;
+    bool removeAdjacentCorners;
+    QUrl inputFile;
+    QUrl outputFile;
     QString backgroundColor;
     QString centerline;
     qint8 colorCount;
@@ -49,11 +48,9 @@ public:
     qint8 despeckleTightness;
     quint8 dpi;
     quint8 filterIterations;
+    quint8 tangentSurround;
     qreal lineReversionThreshold;
     qreal lineThreshold;
-    bool preserveWidth;
-    bool removeAdjacentCorners;
-    quint8 tangentSurround;
 };
 
 }

@@ -46,8 +46,8 @@ void QtAutoTraceLib::generateSvg(QVariant data)
     QMap<QString, QVariant> map = data.toMap();
     InputOptions inOpts;
 
-    inOpts.inputFileName = map["inputFileName"].toString();
-    inOpts.outputFileName = map["outputFileName"].toString();
+    inOpts.inputFile = map["inputFile"].toUrl();
+    inOpts.outputFile = map["outputFile"].toUrl();
     inOpts.colorCount = map["colorCount"].value<qint8>();
 
     this->inputParser.run(inOpts);

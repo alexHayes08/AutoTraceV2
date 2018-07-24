@@ -11,7 +11,7 @@ void GenerictInputReader::readImage(InputOptions &inputOptions)
     emit this->readingImage(0);
 
     // Get file info.
-    QFileInfo info(inputOptions.inputFileName);
+    QFileInfo info(inputOptions.inputFile.path ());
     if (!info.exists())
     {
         QException exc;
@@ -27,7 +27,7 @@ void GenerictInputReader::readImage(InputOptions &inputOptions)
 //    }
     // Load image in one go.
     QImage image;
-    if (!image.load(inputOptions.inputFileName))
+    if (!image.load(inputOptions.inputFile.path ()))
     {
         // Error occurred.
         QException exc;

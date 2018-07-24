@@ -8,10 +8,22 @@ Page {
     title: qsTr("Results")
 
     property alias button_restart: button_restart
+    property alias label_error: label_error
+    property alias image_generatedImage: image_generatedImage
 
     Column {
         id: column
         anchors.fill: parent
+
+        Label {
+            id: label_error
+            enabled: true
+            anchors.right: parent.right
+            anchors.rightMargin: 0
+            anchors.left: parent.left
+            anchors.leftMargin: 0
+            visible: false
+        }
 
         Row {
             id: row
@@ -38,15 +50,10 @@ Page {
         }
 
         Image {
-            id: image
+            id: image_generatedImage
             anchors.horizontalCenter: parent.horizontalCenter
             fillMode: Image.Stretch
             source: "placeholder.svg"
         }
     }
 }
-
-/*##^## Designer {
-    D{i:3;anchors_height:400;anchors_width:200;anchors_x:194;anchors_y:126}
-}
- ##^##*/
